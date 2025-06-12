@@ -1,11 +1,12 @@
-import React, { useState } from 'react'
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import React, { useState } from 'react';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const LoginPage = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  
     
   return (
     <SafeAreaView style={styles.container}>
@@ -24,7 +25,7 @@ const LoginPage = () => {
 
         {/* Form */}
         <View style={styles.form}>
-          <Text style={styles.label}>Email</Text>
+          <Text style={[styles.label, styles.font]}>Email</Text>
           <TextInput
             style={styles.input}
             placeholder="example@gmail.com"
@@ -34,7 +35,7 @@ const LoginPage = () => {
             autoCapitalize="none"
           />
 
-          <Text style={styles.label}>Password</Text>
+          <Text style={[styles.label, styles.font]}>Password</Text>
           <TextInput
             style={styles.input}
             placeholder="••••••••"
@@ -68,7 +69,7 @@ const LoginPage = () => {
             <TouchableOpacity style={styles.socialButton}>
               <Image 
                 source={require('../../assets/logos/apple.png')}
-                style={styles.socialIcon}
+                style={styles.appleIcon}
               />
             </TouchableOpacity>
           </View>
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#F1F0E9',
+    backgroundColor: '#f',
   },
   content: {
     flex: 1,
@@ -101,37 +102,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconContainer: {
-    marginTop: -30,
-    marginBottom: 40,
+    marginTop: 40,
+    marginBottom: 20,
   },
   icon: {
-    width: 90,
-    height: 80,
+    width: 60,
+    height: 60,
   },
   title: {
     fontSize: 24,
-    fontWeight: '600',
-    marginBottom: 25,
-    color: '#000',
     fontFamily: 'Poppins-SemiBold',
+    marginBottom: 30,
+    color: '#000',
   },
   form: {
     width: '100%',
   },
   label: {
     fontSize: 16,
-    marginBottom: 5,
+    marginBottom: 8,
     color: '#333',
     fontFamily: 'Poppins-Regular',
   },
   input: {
-    height: 45,
+    height: 50,
     width: '100%',
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
     paddingHorizontal: 15,
-    marginBottom: 10,
+    marginBottom: 20,
     fontSize: 16,
     backgroundColor: '#fff',
     fontFamily: 'Poppins-Regular',
@@ -142,13 +142,12 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 15,
+    marginTop: 10,
   },
   signInText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
-    fontFamily: 'Poppins-Semibold',
+    fontFamily: 'Poppins-SemiBold',
   },
   orText: {
     textAlign: 'center',
@@ -162,7 +161,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   socialButton: {
-    width: 50,
+    width: 100,
     height: 50,
     borderWidth: 1,
     borderColor: '#ddd',
@@ -173,6 +172,10 @@ const styles = StyleSheet.create({
   socialIcon: {
     width: 24,
     height: 24,
+  },
+  appleIcon: {
+    width: 28,
+    height: 28,
   },
   signUpContainer: {
     flexDirection: 'row',
@@ -185,7 +188,6 @@ const styles = StyleSheet.create({
   },
   signUpLink: {
     color: '#0B4619',
-    fontWeight: '600',
     fontFamily: 'Poppins-SemiBold',
   },
 })
