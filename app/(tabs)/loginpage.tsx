@@ -1,10 +1,12 @@
-import React, { useState } from 'react'
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import React, { useState } from 'react';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 const LoginPage = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  
     
   return (
     <SafeAreaView style={styles.container}>
@@ -23,7 +25,7 @@ const LoginPage = () => {
 
         {/* Form */}
         <View style={styles.form}>
-          <Text style={styles.label}>Email</Text>
+          <Text style={[styles.label, styles.font]}>Email</Text>
           <TextInput
             style={styles.input}
             placeholder="example@gmail.com"
@@ -33,7 +35,7 @@ const LoginPage = () => {
             autoCapitalize="none"
           />
 
-          <Text style={styles.label}>Password</Text>
+          <Text style={[styles.label, styles.font]}>Password</Text>
           <TextInput
             style={styles.input}
             placeholder="••••••••"
@@ -67,7 +69,7 @@ const LoginPage = () => {
             <TouchableOpacity style={styles.socialButton}>
               <Image 
                 source={require('../../assets/logos/apple.png')}
-                style={styles.socialIcon}
+                style={styles.appleIcon}
               />
             </TouchableOpacity>
           </View>
@@ -87,6 +89,9 @@ const LoginPage = () => {
 export default LoginPage
 
 const styles = StyleSheet.create({
+  font: {
+    fontFamily: 'Poppins_400Regular',
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -106,7 +111,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
     marginBottom: 30,
     color: '#000',
   },
@@ -117,6 +122,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8,
     color: '#333',
+    fontFamily: 'Poppins-Regular',
   },
   input: {
     height: 50,
@@ -128,6 +134,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     fontSize: 16,
     backgroundColor: '#fff',
+    fontFamily: 'Poppins-Regular',
   },
   signInButton: {
     width: '100%',
@@ -140,12 +147,13 @@ const styles = StyleSheet.create({
   signInText: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
   },
   orText: {
     textAlign: 'center',
     marginVertical: 20,
     color: '#666',
+    fontFamily: 'Poppins-Regular',
   },
   socialButtons: {
     flexDirection: 'row',
@@ -153,7 +161,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   socialButton: {
-    width: 50,
+    width: 100,
     height: 50,
     borderWidth: 1,
     borderColor: '#ddd',
@@ -165,6 +173,10 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
   },
+  appleIcon: {
+    width: 28,
+    height: 28,
+  },
   signUpContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -172,9 +184,10 @@ const styles = StyleSheet.create({
   },
   signUpText: {
     color: '#666',
+    fontFamily: 'Poppins-Regular',
   },
   signUpLink: {
     color: '#0B4619',
-    fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
   },
 })
