@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
+
 const LoginPage = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -87,9 +88,12 @@ const LoginPage = () => {
 export default LoginPage
 
 const styles = StyleSheet.create({
+  font: {
+    fontFamily: 'Poppins_400Regular',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F1F0E9',
   },
   content: {
     flex: 1,
@@ -97,37 +101,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconContainer: {
-    marginTop: 40,
-    marginBottom: 20,
+    marginTop: -30,
+    marginBottom: 40,
   },
   icon: {
-    width: 60,
-    height: 60,
+    width: 90,
+    height: 80,
   },
   title: {
     fontSize: 24,
     fontWeight: '600',
-    marginBottom: 30,
+    marginBottom: 25,
     color: '#000',
+    fontFamily: 'Poppins-SemiBold',
   },
   form: {
     width: '100%',
   },
   label: {
     fontSize: 16,
-    marginBottom: 8,
+    marginBottom: 5,
     color: '#333',
+    fontFamily: 'Poppins-Regular',
   },
   input: {
-    height: 50,
+    height: 45,
     width: '100%',
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 8,
     paddingHorizontal: 15,
-    marginBottom: 20,
+    marginBottom: 10,
     fontSize: 16,
     backgroundColor: '#fff',
+    fontFamily: 'Poppins-Regular',
   },
   signInButton: {
     width: '100%',
@@ -135,17 +142,19 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 8,
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: 15,
   },
   signInText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+    fontFamily: 'Poppins-Semibold',
   },
   orText: {
     textAlign: 'center',
     marginVertical: 20,
     color: '#666',
+    fontFamily: 'Poppins-Regular',
   },
   socialButtons: {
     flexDirection: 'row',
@@ -172,9 +181,11 @@ const styles = StyleSheet.create({
   },
   signUpText: {
     color: '#666',
+    fontFamily: 'Poppins-Regular',
   },
   signUpLink: {
     color: '#0B4619',
     fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
   },
 })
