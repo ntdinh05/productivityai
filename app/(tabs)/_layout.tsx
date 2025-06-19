@@ -1,6 +1,7 @@
 // Rest of the import statements
 import { Poppins_400Regular, Poppins_500Medium, Poppins_600SemiBold, useFonts } from '@expo-google-fonts/poppins';
-import { Stack } from 'expo-router';
+import { Tabs } from 'expo-router';
+// Import Tabs from expo-router, Tabs allows bottom navigation bar
 
 
 import * as SplashScreen from 'expo-splash-screen';
@@ -11,7 +12,7 @@ import { useEffect } from 'react';
 SplashScreen.preventAutoHideAsync();
 
 
-export default function RootLayout() {
+export default function TabsLayout() {
   const [loaded, error] = useFonts({
     Poppins_400Regular,
     Poppins_500Medium,
@@ -29,27 +30,21 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack>
-      <Stack.Screen
-        name="(tabs)"
-        options={{
-          headerShown: false,
-          title: 'Home',
-        }}
-      />
-      <Stack.Screen
-        name="(auth)/login"
-        options={{
-          title: 'Sign In',
-        }}
-      />
-      <Stack.Screen
-        name="(auth)/signup"
-        options={{
-          title: 'Sign Up',
-        }}
-      />
-      
-    </Stack>
+    <Tabs>
+        <Tabs.Screen
+            name="dashboard"
+            options={{
+                title: 'Dashboard',
+                headerShown: false,
+            }}
+        />
+        <Tabs.Screen
+            name="index"
+            options={{
+                title: 'Profile',
+                headerShown: false,
+            }}
+        />
+    </Tabs>
   )
 }

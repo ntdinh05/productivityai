@@ -1,7 +1,7 @@
 import { Link } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
-export default function HomeScreen() {
+export default function Profile() {
   return (
     <View style={styles.container}>
       <Text style={
@@ -10,8 +10,8 @@ export default function HomeScreen() {
           fontWeight: 'bold',
           color: '#333',
         }
-      }>Home Page</Text>
-      <Link href="/(tabs)/loginpage" style={{ marginTop: 20 }}>Login Page</Link>
+      }>Profile Page</Text>
+      <Link href="/(auth)/login" style={{ marginTop: 20 }}>Sign In</Link>
     </View>
   );
 }

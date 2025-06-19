@@ -1,13 +1,13 @@
+import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-
-const LoginPage = () => {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+const SignupPage = () => {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   
-    
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -21,11 +21,11 @@ const LoginPage = () => {
         </View>
 
         {/* Title */}
-        <Text style={styles.title}>Sign in your account</Text>
+        <Text style={styles.title}>Create an account</Text>
 
         {/* Form */}
         <View style={styles.form}>
-          <Text style={[styles.label, styles.font]}>Email</Text>
+          <Text style={styles.label}>Email</Text>
           <TextInput
             style={styles.input}
             placeholder="example@gmail.com"
@@ -35,7 +35,7 @@ const LoginPage = () => {
             autoCapitalize="none"
           />
 
-          <Text style={[styles.label, styles.font]}>Password</Text>
+          <Text style={styles.label}>Password</Text>
           <TextInput
             style={styles.input}
             placeholder="••••••••"
@@ -44,13 +44,22 @@ const LoginPage = () => {
             secureTextEntry
           />
 
-          <TouchableOpacity style={styles.signInButton}>
-            <Text style={styles.signInText}>SIGN IN</Text>
+          <Text style={styles.label}>Confirm Password</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="••••••••"
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            secureTextEntry
+          />
+
+          <TouchableOpacity style={styles.signUpButton}>
+            <Text style={styles.signUpButtonText}>SIGN UP</Text>
           </TouchableOpacity>
 
-          <Text style={styles.orText}>or sign in with</Text>
+          <Text style={styles.orText}>or sign up with</Text>
 
-          {/* Social Sign In Buttons */}
+          {/* Social Sign Up Buttons */}
           <View style={styles.socialButtons}>
             <TouchableOpacity style={styles.socialButton}>
               <Image 
@@ -69,32 +78,27 @@ const LoginPage = () => {
             <TouchableOpacity style={styles.socialButton}>
               <Image 
                 source={require('../../assets/logos/apple.png')}
-                style={styles.appleIcon}
+                style={styles.socialIcon}
               />
             </TouchableOpacity>
           </View>
 
-          <View style={styles.signUpContainer}>
-            <Text style={styles.signUpText}>Don't have an account? </Text>
+          <View style={styles.signInContainer}>
+            <Text style={styles.signInText}>Already have an account? </Text>
             <TouchableOpacity>
-              <Text style={styles.signUpLink}>SIGN UP</Text>
+              <Link style={styles.signInLink} href="/login">SIGN IN</Link>
             </TouchableOpacity>
           </View>
         </View>
       </View>
     </SafeAreaView>
-  )
-}
-
-export default LoginPage
+  );
+};
 
 const styles = StyleSheet.create({
-  font: {
-    fontFamily: 'Poppins_400Regular',
-  },
   container: {
     flex: 1,
-    backgroundColor: '#f',
+    backgroundColor: '#fff',
   },
   content: {
     flex: 1,
@@ -102,7 +106,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconContainer: {
-    marginTop: 40,
+    marginTop: 10,
     marginBottom: 20,
   },
   icon: {
@@ -136,7 +140,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     fontFamily: 'Poppins-Regular',
   },
-  signInButton: {
+  signUpButton: {
     width: '100%',
     backgroundColor: '#0B4619',
     padding: 15,
@@ -144,7 +148,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 10,
   },
-  signInText: {
+  signUpButtonText: {
     color: '#fff',
     fontSize: 16,
     fontFamily: 'Poppins-SemiBold',
@@ -173,21 +177,19 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
   },
-  appleIcon: {
-    width: 28,
-    height: 28,
-  },
-  signUpContainer: {
+  signInContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 30,
   },
-  signUpText: {
+  signInText: {
     color: '#666',
     fontFamily: 'Poppins-Regular',
   },
-  signUpLink: {
+  signInLink: {
     color: '#0B4619',
     fontFamily: 'Poppins-SemiBold',
   },
-})
+});
+
+export default SignupPage;
