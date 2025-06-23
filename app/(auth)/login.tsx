@@ -1,14 +1,32 @@
 import { Link } from 'expo-router';
 import React, { useState } from 'react';
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, AppState, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { supabase } from '../../lib/supabase'; // Adjust the path as needed
 
+AppState.addEventListener('change', (state) => {
+  if (state === 'active') {
+    supabase.auth.startAutoRefresh()
+  } else {
+    supabase.auth.stopAutoRefresh()
+  }
+})
 
 const LoginPage = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  async function signInWithEmail() {
+    setLoading(true)
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+      
+    })
+    if (error) Alert.alert(error.message)
+    setLoading(false)
+  }
   
-    
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -23,7 +41,7 @@ const LoginPage = () => {
 
         {/* Title */}
         <Text style={styles.title}>Sign in your account</Text>
-
+        
         {/* Form */}
         <View style={styles.form}>
           <Text style={[styles.label, styles.font]}>Email</Text>
@@ -31,7 +49,7 @@ const LoginPage = () => {
             style={styles.input}
             placeholder="example@gmail.com"
             value={email}
-            onChangeText={setEmail}
+            onChangeText={(text) => setEmail(text)}
             keyboardType="email-address"
             autoCapitalize="none"
           />
@@ -41,11 +59,11 @@ const LoginPage = () => {
             style={styles.input}
             placeholder="••••••••"
             value={password}
-            onChangeText={setPassword}
+            onChangeText={(text) => setPassword(text)}
             secureTextEntry
           />
 
-          <TouchableOpacity style={styles.signInButton}>
+          <TouchableOpacity style={styles.signInButton} onPress={() => signInWithEmail()}>
             <Text style={styles.signInText}>SIGN IN</Text>
           </TouchableOpacity>
 
@@ -93,7 +111,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#f',
+    backgroundColor: '#F1F0E9',
   },
   content: {
     flex: 1,
@@ -101,12 +119,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   iconContainer: {
-    marginTop: 40,
-    marginBottom: 20,
+    marginBottom: 25,
   },
   icon: {
-    width: 60,
-    height: 60,
+    width: 130,
+    height: 130,
   },
   title: {
     fontSize: 24,

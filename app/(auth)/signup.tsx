@@ -1,12 +1,36 @@
-import { Link } from 'expo-router';
+import { supabase } from '@/lib/supabase';
 import React, { useState } from 'react';
-import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SignupPage = () => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false)
+
+  async function signUpWithEmail() {
+    setLoading(true)
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+        },
+      },
+    })
+
+    if (error) Alert.alert(error.message)
+    if (!session) Alert.alert('Please check your inbox for email verification!')
+    setLoading(false)
+  }
   
   return (
     <SafeAreaView style={styles.container}>
@@ -22,6 +46,32 @@ const SignupPage = () => {
 
         {/* Title */}
         <Text style={styles.title}>Create an account</Text>
+
+        {/* First Name & Last Name Row */}
+        <View style={styles.row}>
+          <View style={styles.halfInputContainer}>
+            <Text style={styles.label}>First Name</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="First Name"
+              value={firstName}
+              onChangeText={setFirstName}
+              textContentType='oneTimeCode'
+              autoCapitalize="words"
+            />
+          </View>
+          <View style={styles.halfInputContainer}>
+            <Text style={styles.label}>Last Name</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Last Name"
+              value={lastName}
+              onChangeText={setLastName}
+              textContentType='oneTimeCode'
+              autoCapitalize="words"
+            />
+          </View>
+        </View>
 
         {/* Form */}
         <View style={styles.form}>
@@ -41,6 +91,8 @@ const SignupPage = () => {
             placeholder="••••••••"
             value={password}
             onChangeText={setPassword}
+            onSubmitEditing={()=> Keyboard.dismiss()}
+            textContentType='oneTimeCode'
             secureTextEntry
           />
 
@@ -50,10 +102,12 @@ const SignupPage = () => {
             placeholder="••••••••"
             value={confirmPassword}
             onChangeText={setConfirmPassword}
+            onSubmitEditing={()=> Keyboard.dismiss()}
+            textContentType='oneTimeCode'
             secureTextEntry
           />
 
-          <TouchableOpacity style={styles.signUpButton}>
+          <TouchableOpacity style={styles.signUpButton} disabled={loading} onPress={signUpWithEmail}>
             <Text style={styles.signUpButtonText}>SIGN UP</Text>
           </TouchableOpacity>
 
@@ -82,13 +136,6 @@ const SignupPage = () => {
               />
             </TouchableOpacity>
           </View>
-
-          <View style={styles.signInContainer}>
-            <Text style={styles.signInText}>Already have an account? </Text>
-            <TouchableOpacity>
-              <Link style={styles.signInLink} href="/login">SIGN IN</Link>
-            </TouchableOpacity>
-          </View>
         </View>
       </View>
     </SafeAreaView>
@@ -98,15 +145,14 @@ const SignupPage = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F1F0E9',
   },
   content: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 20,
     alignItems: 'center',
   },
   iconContainer: {
-    marginTop: 10,
     marginBottom: 20,
   },
   icon: {
@@ -189,6 +235,14 @@ const styles = StyleSheet.create({
   signInLink: {
     color: '#0B4619',
     fontFamily: 'Poppins-SemiBold',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12, // Optional, for spacing between fields (React Native 0.71+)
+  },
+  halfInputContainer: {
+    flex: 1,
   },
 });
 

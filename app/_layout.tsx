@@ -35,18 +35,22 @@ export default function RootLayout() {
         options={{
           headerShown: false,
           title: 'Home',
+
         }}
       />
       <Stack.Screen
         name="(auth)/login"
         options={{
           title: 'Sign In',
+          headerStyle: { backgroundColor: '#F1F0E9' },
+          
         }}
       />
       <Stack.Screen
         name="(auth)/signup"
         options={{
           title: 'Sign Up',
+          headerStyle: { backgroundColor: '#F1F0E9' },
         }}
       />
       
