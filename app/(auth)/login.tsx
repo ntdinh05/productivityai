@@ -1,6 +1,6 @@
 import { Link } from 'expo-router';
 import React, { useState } from 'react';
-import { AppState, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, AppState, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase'; // Adjust the path as needed
 
@@ -15,7 +15,18 @@ AppState.addEventListener('change', (state) => {
 const LoginPage = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-    
+  const [loading, setLoading] = useState(false)
+  async function signInWithEmail() {
+    setLoading(true)
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+      
+    })
+    if (error) Alert.alert(error.message)
+    setLoading(false)
+  }
+  
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -77,7 +88,7 @@ const LoginPage = () => {
             <TouchableOpacity style={styles.socialButton}>
               <Image 
                 source={require('../../assets/logos/apple.png')}
-                style={styles.appleIcon}
+                style={styles.socialIcon}
               />
             </TouchableOpacity>
           </View>
