@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native'
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const initialTasks = [
@@ -10,7 +10,6 @@ const initialTasks = [
   { id: '5', title: 'Plan next sprint', completed: false },
   { id: '6', title: 'Fix bugs', completed: false },
   { id: '7', title: 'Write tests', completed: false },
-  { id: '8', title: 'Deploy to production', completed: false },
 ]
 
 const dashboard = () => {
@@ -30,7 +29,7 @@ const dashboard = () => {
       {/* Bar Chart Mockup */}
       <View style={styles.chartContainer}>
         <View style={styles.barRow}>
-          {[100, 80, 120, 50, 40, 60, 50, 100].map((height, idx) => (
+          {[100, 80, 90, 50, 70, 60, 95].map((height, idx) => (
             <View key={idx} style={[styles.bar, { height }]} />
           ))}
         </View>
@@ -56,7 +55,7 @@ const dashboard = () => {
         </View>
       </View>
       {/* To Do List */}
-      <View style={[styles.todoContainer, { maxHeight: 250 }]}>
+      <View style={[styles.todoContainer]}>
       <Text style={styles.todoHeader}>To do list:</Text>
       <FlatList
         data={tasks}
@@ -93,7 +92,7 @@ const styles = StyleSheet.create({
   },
   summary: {
     fontSize: 32,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins_600SemiBold',
     color: '#222',
     marginTop: 30,
     marginBottom: 30,
@@ -110,15 +109,16 @@ const styles = StyleSheet.create({
   barRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    height: 120,
+    height: 100,
     justifyContent: 'space-between',
     width: '100%',
   },
   bar: {
-    width: 18,
+    width: 22,
     backgroundColor: '#E17B2F',
     borderRadius: 6,
     marginHorizontal: 5,
+    marginVertical: 0,
   },
   row: {
     flexDirection: 'row',
@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   },
   iconLabelTop: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins_600SemiBold',
     color: '#4F704F',
     marginBottom: 3,
   },
@@ -166,13 +166,13 @@ const styles = StyleSheet.create({
     borderColor: '#4F704F',
     marginTop: 8,
     overflow: 'hidden',
-    maxHeight: 500,},
+    maxHeight: 300,},
   
     todoHeader: {
     backgroundColor: '#4F704F',
     color: '#fff',
     fontSize: 22,
-    fontWeight: 'bold',
+    fontFamily: 'Poppins_600SemiBold',
     paddingVertical: 16,
     paddingHorizontal: 16,
     borderTopLeftRadius: 16,
@@ -201,6 +201,6 @@ const styles = StyleSheet.create({
   todoText: {
     fontSize: 17,
     color: '#4F704F',
-    fontWeight: '600',
+    fontFamily: 'Poppins_600SemiBold',
   },
 })

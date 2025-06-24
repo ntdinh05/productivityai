@@ -122,6 +122,5 @@ const styles = StyleSheet.create({
     },
     tabBarIcon: {
         display: 'flex'
-
     }
 });
