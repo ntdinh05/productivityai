@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import React, { useState } from 'react';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 const initialTasks = [
   { id: '1', title: 'Complete React Native project', completed: true },
@@ -29,7 +31,7 @@ const dashboard = () => {
       {/* Bar Chart Mockup */}
       <View style={styles.chartContainer}>
         <View style={styles.barRow}>
-          {[100, 80, 90, 50, 70, 60, 95].map((height, idx) => (
+          {[hp(10), hp(8), hp(9), hp(5), hp(7), hp(6), hp(9.5)].map((height, idx) => (
             <View key={idx} style={[styles.bar, { height }]} />
           ))}
         </View>
@@ -41,7 +43,7 @@ const dashboard = () => {
           <Text style={styles.iconLabelTop}>Streaks</Text>
           <View style={styles.iconBox}>
             <View style={styles.streakIcon}>
-              <Text style={{ fontSize: 40 }}>🔥</Text>
+              <Text style={{ fontSize: hp(5) }}>🔥</Text>
             </View>
           </View>
         </View>
@@ -49,7 +51,7 @@ const dashboard = () => {
           <Text style={styles.iconLabelTop}>Awards</Text>
           <View style={styles.iconBox}>
             <View style={styles.awardIcon}>
-              <Text style={{ fontSize: 40 }}>🏅</Text>
+              <Text style={{ fontSize: hp(5) }}>🏅</Text>
             </View>
           </View>
         </View>
@@ -65,10 +67,10 @@ const dashboard = () => {
             <TouchableOpacity onPress={() => toggleTask(item.id)}>
               <View style={[
                 styles.circle,
-                { backgroundColor: item.completed ? '#4F704F' : 'transparent', borderColor: '#4F704F', justifyContent: 'center', alignItems: 'center' }
+                { backgroundColor: item.completed ? '#4F704F' : 'transparent', borderColor: '#4F704F', justifyContent: 'center', alignItems: 'center'}
               ]}>
                 {item.completed && (
-                  <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>✓</Text>
+                  <Text style={{ color: '#fff', fontSize: hp(1.6), fontWeight: 'bold', paddingBottom: hp(2) }}>✓</Text>
                 )}
               </View>
             </TouchableOpacity>
@@ -88,49 +90,49 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F6F5ED',
-    marginHorizontal: 30,
+    marginHorizontal: wp(7),
   },
   summary: {
-    fontSize: 32,
+    fontSize: hp(3.5),
     fontFamily: 'Poppins_600SemiBold',
     color: '#222',
-    marginTop: 30,
-    marginBottom: 30,
+    marginTop: hp(3),
+    marginBottom: hp(3),
   },
   chartContainer: {
     backgroundColor: '#fff',
     borderRadius: 22,
     borderWidth: 2,
     borderColor: '#C9C9B6',
-    padding: 20,
-    marginBottom: 20,
+    paddingHorizontal: wp(5),
+    paddingVertical: hp(2),
+    marginBottom: hp(2),
     alignItems: 'center',
   },
   barRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    height: 100,
+    height: hp(10),
     justifyContent: 'space-between',
     width: '100%',
   },
   bar: {
-    width: 22,
+    width: wp(5),
     backgroundColor: '#E17B2F',
     borderRadius: 6,
-    marginHorizontal: 5,
-    marginVertical: 0,
+    marginHorizontal: wp(2),
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 18,
-    gap:20
+    marginBottom: hp(2),
+    gap: wp(5),
   },
   iconLabelTop: {
-    fontSize: 20,
+    fontSize: hp(2.5),
     fontFamily: 'Poppins_600SemiBold',
     color: '#4F704F',
-    marginBottom: 3,
+    marginBottom: hp(1),
   },
   iconBox: {
     backgroundColor: '#fff',
@@ -138,68 +140,68 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#C9C9B6',
     alignItems: 'center',
-    marginHorizontal: 0,
-    paddingVertical: 12,
-    height: 160,
-    width: 170,
+    paddingVertical: hp(0),
+    height: hp(16),
+    width: wp(37),
     },
   streakIcon: {
-    width: 70,
-    height: 70,
+    width: wp(17),
+    height: hp(16),
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: hp(1),
   },
   awardIcon: {
-    width: 70,
-    height: 70,
+    width: wp(17),
+    height: hp(16),
     borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 4,
   },
   todoContainer: {
     backgroundColor: '#fff',
     borderRadius: 22,
     borderWidth: 2,
     borderColor: '#4F704F',
-    marginTop: 8,
+    marginTop: hp(1),
     overflow: 'hidden',
-    maxHeight: 300,},
-  
-    todoHeader: {
+    maxHeight: hp(31), // Limit height to 50% of screen height
+  },
+
+  todoHeader: {
     backgroundColor: '#4F704F',
     color: '#fff',
-    fontSize: 22,
+    fontSize: hp(2.5),
     fontFamily: 'Poppins_600SemiBold',
-    paddingVertical: 16,
-    paddingHorizontal: 16,
+    paddingVertical: hp(2),
+    paddingHorizontal: wp(4),
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-    marginBottom: 8,
-    height: 60,
-  
+    marginBottom: hp(1),
+    height: hp(6), // Fixed height for header
+    textAlign: 'left',
+    textAlignVertical: 'center',
   },
   todoItem: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#E6E6E6',
-    marginHorizontal: 12,
-    marginVertical: 12,
+    marginHorizontal: wp(3),
+    marginVertical: hp(1),
     borderRadius: 15,
-    padding: 8,
-    height: 50,
+    padding: hp(1),
+    height: hp(5.5),
   },
   circle: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
+    width: hp(2.2),
+    height: hp(2.2),
+    borderRadius: hp(1.1),
     borderWidth: 3,
-    marginRight: 12,
+    marginRight: wp(3),
   },
   todoText: {
-    fontSize: 17,
+    fontSize: hp(1.9),
     color: '#4F704F',
     fontFamily: 'Poppins_600SemiBold',
   },

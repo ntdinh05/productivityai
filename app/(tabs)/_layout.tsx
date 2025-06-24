@@ -2,6 +2,7 @@
 import { Poppins_400Regular, Poppins_500Medium, Poppins_600SemiBold, useFonts } from '@expo-google-fonts/poppins';
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from 'expo-router';
+
 // Import Tabs from expo-router, Tabs allows bottom navigation bar
 
 
@@ -9,6 +10,7 @@ import * as SplashScreen from 'expo-splash-screen';
 
 import { useEffect } from 'react';
 import { StyleSheet } from "react-native";
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 
 SplashScreen.preventAutoHideAsync();
@@ -48,8 +50,8 @@ export default function TabsLayout() {
                 headerShown: false,
                 tabBarIcon: ({focused}) => (
                     <Ionicons
-                        size = {24}
-                        name = {focused ? "home" : "home-outline"}
+                        size={hp('3%')}
+                        name={focused ? "home" : "home-outline"}
                     />
                 )
             }}
@@ -61,8 +63,8 @@ export default function TabsLayout() {
                 headerShown: false,
                 tabBarIcon: ({focused}) => (
                     <Ionicons
-                        size = {24}
-                        name = {focused ? "timer" : "timer-outline"}
+                        size={hp('3%')}
+                        name={focused ? "timer" : "timer-outline"}
                     />
                 )
             }}
@@ -74,8 +76,8 @@ export default function TabsLayout() {
                 headerShown: false,
                 tabBarIcon: ({focused}) => (
                     <Ionicons
-                        size = {24}
-                        name = {focused ? "calendar" : "calendar-outline"}
+                        size={hp('3%')}
+                        name={focused ? "calendar" : "calendar-outline"}
                     />
                 )
             }}
@@ -87,8 +89,8 @@ export default function TabsLayout() {
                 headerShown: false,
                 tabBarIcon: ({focused}) => (
                     <Ionicons
-                        size = {24}
-                        name = {focused ? "list" : "list-outline"}
+                        size={hp('3%')}
+                        name={focused ? "list" : "list-outline"}
                     />
                 )
             }}
@@ -100,8 +102,8 @@ export default function TabsLayout() {
                 headerShown: false,
                 tabBarIcon: ({focused}) => (
                     <Ionicons
-                        size = {24}
-                        name = {focused ? "person" : "person-outline"}
+                        size={hp('3%')}
+                        name={focused ? "person" : "person-outline"}
                     />
                 )
             }}
@@ -112,13 +114,13 @@ export default function TabsLayout() {
 const styles = StyleSheet.create({
     tabBar: {
         backgroundColor: '#99C9A1',
-        height: 75,
-        paddingBottom: 15,
-        paddingTop: 10,
+        height: hp(9),  // Responsive height
+        paddingBottom: hp(1.8),
+        paddingTop: hp(1.2),
     },
     tabLabel: {
         fontFamily: 'Poppins_600SemiBold',
-        fontSize: 12,
+        fontSize: hp(1.5),  // Responsive font size
     },
     tabBarIcon: {
         display: 'flex'
