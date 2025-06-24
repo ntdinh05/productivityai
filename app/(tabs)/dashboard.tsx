@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const initialTasks = [
-  { id: '1', title: 'Complete React Native project', completed: true },
+  { id: '1', title: 'Complete React Native project before deadline', completed: true },
   { id: '2', title: 'Review code for pull request', completed: false },
   { id: '3', title: 'Attend team meeting', completed: false },
   { id: '4', title: 'Update documentation', completed: true },
@@ -90,19 +90,19 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F6F5ED',
-    marginHorizontal: wp(7),
+    paddingHorizontal: wp(7),
+    paddingVertical: hp(1.2),
   },
   summary: {
-    fontSize: hp(3.5),
+    fontSize: wp(6.5),
     fontFamily: 'Poppins_600SemiBold',
     color: '#222',
-    marginTop: hp(3),
     marginBottom: hp(3),
   },
   chartContainer: {
     backgroundColor: '#fff',
-    borderRadius: 22,
-    borderWidth: 2,
+    borderRadius: wp(5.5),
+    borderWidth: wp(0.5),
     borderColor: '#C9C9B6',
     paddingHorizontal: wp(5),
     paddingVertical: hp(2),
@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   bar: {
     width: wp(5),
     backgroundColor: '#E17B2F',
-    borderRadius: 6,
+    borderRadius: wp(1.5),
     marginHorizontal: wp(2),
   },
   row: {
@@ -136,8 +136,8 @@ const styles = StyleSheet.create({
   },
   iconBox: {
     backgroundColor: '#fff',
-    borderRadius: 16,
-    borderWidth: 2,
+    borderRadius: wp(4),
+    borderWidth: wp(0.5),
     borderColor: '#C9C9B6',
     alignItems: 'center',
     paddingVertical: hp(0),
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
   streakIcon: {
     width: wp(17),
     height: hp(16),
-    borderRadius: 16,
+    borderRadius: wp(4),
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: hp(1),
@@ -155,14 +155,14 @@ const styles = StyleSheet.create({
   awardIcon: {
     width: wp(17),
     height: hp(16),
-    borderRadius: 16,
+    borderRadius: wp(4),
     justifyContent: 'center',
     alignItems: 'center',
   },
   todoContainer: {
     backgroundColor: '#fff',
-    borderRadius: 22,
-    borderWidth: 2,
+    borderRadius: wp(5.5),
+    borderWidth: wp(0.5),
     borderColor: '#4F704F',
     marginTop: hp(1),
     overflow: 'hidden',
@@ -176,20 +176,21 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins_600SemiBold',
     paddingVertical: hp(2),
     paddingHorizontal: wp(4),
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    borderTopLeftRadius: wp(4),
+    borderTopRightRadius: wp(4),
     marginBottom: hp(1),
     height: hp(6), // Fixed height for header
     textAlign: 'left',
     textAlignVertical: 'center',
   },
   todoItem: {
+    overflow: 'scroll',
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#E6E6E6',
     marginHorizontal: wp(3),
     marginVertical: hp(1),
-    borderRadius: 15,
+    borderRadius: wp(3.8),
     padding: hp(1),
     height: hp(5.5),
   },
@@ -197,7 +198,7 @@ const styles = StyleSheet.create({
     width: hp(2.2),
     height: hp(2.2),
     borderRadius: hp(1.1),
-    borderWidth: 3,
+    borderWidth: wp(0.8),
     marginRight: wp(3),
   },
   todoText: {

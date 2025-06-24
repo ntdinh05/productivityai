@@ -1,6 +1,7 @@
 import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, AppState, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../../lib/supabase'; // Adjust the path as needed
 
@@ -115,95 +116,96 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: wp(5),
+    paddingTop: hp(5),
     alignItems: 'center',
   },
   iconContainer: {
-    marginBottom: 25,
+    marginBottom: hp(2),
   },
   icon: {
-    width: 130,
-    height: 130,
+    width: wp(12),
+    height: wp(12),
   },
   title: {
-    fontSize: 24,
+    fontSize: hp(2.8),
     fontFamily: 'Poppins-SemiBold',
-    marginBottom: 30,
+    marginBottom: hp(2.5),
     color: '#000',
   },
   form: {
     width: '100%',
   },
   label: {
-    fontSize: 16,
-    marginBottom: 8,
+    fontSize: hp(1.8),
+    marginBottom: hp(0.8),
     color: '#333',
     fontFamily: 'Poppins-Regular',
   },
   input: {
-    height: 50,
+    height: hp(5.2),
     width: '100%',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    marginBottom: 20,
-    fontSize: 16,
+    borderWidth: wp(0.3),
+    borderColor: 'black',
+    borderRadius: wp(2),
+    paddingHorizontal: wp(4),
+    marginBottom: hp(2),
+    fontSize: hp(1.8),
     backgroundColor: '#fff',
     fontFamily: 'Poppins-Regular',
   },
   signInButton: {
     width: '100%',
     backgroundColor: '#0B4619',
-    padding: 15,
-    borderRadius: 8,
+    padding: wp(3),
+    borderRadius: wp(2),
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: hp(1),
   },
   signInText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: hp(1.8),
     fontFamily: 'Poppins-SemiBold',
   },
   orText: {
     textAlign: 'center',
-    marginVertical: 20,
+    marginVertical: hp(2),
     color: '#666',
     fontFamily: 'Poppins-Regular',
   },
   socialButtons: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 20,
+    gap: wp(4),
   },
   socialButton: {
-    width: 100,
-    height: 50,
-    borderWidth: 1,
+    width: wp(20),
+    height: hp(5),
+    borderWidth: wp(0.3),
     borderColor: '#ddd',
-    borderRadius: 8,
+    borderRadius: wp(2),
     justifyContent: 'center',
     alignItems: 'center',
   },
   socialIcon: {
-    width: 24,
-    height: 24,
+    width: wp(5),
+    height: wp(5),
   },
   appleIcon: {
-    width: 28,
-    height: 28,
+    width: wp(5.5),
+    height: wp(5.5),
   },
   signUpContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 30,
+    marginTop: hp(2),
   },
   signUpText: {
     color: '#666',
     fontFamily: 'Poppins-Regular',
   },
   signUpLink: {
-    color: '#0B4619',
+    color: '#00B140',
     fontFamily: 'Poppins-SemiBold',
   },
 })
