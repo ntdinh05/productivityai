@@ -63,19 +63,19 @@ const dashboard = () => {
         data={tasks}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
-          <View style={styles.todoItem}>
+          <TouchableOpacity style={styles.todoItem}>
             <TouchableOpacity onPress={() => toggleTask(item.id)}>
               <View style={[
                 styles.circle,
                 { backgroundColor: item.completed ? '#4F704F' : 'transparent', borderColor: '#4F704F', justifyContent: 'center', alignItems: 'center'}
               ]}>
                 {item.completed && (
-                  <Text style={{ color: '#fff', fontSize: hp(1.6), fontWeight: 'bold', paddingBottom: hp(2) }}>✓</Text>
+                  <Text style={{ color: '#fff', fontSize: hp(1.6), fontWeight: 'bold' }}>✓</Text>
                 )}
               </View>
             </TouchableOpacity>
-            <Text style={styles.todoText}>{item.title}</Text>
-          </View>
+            <Text style={styles.todoText} numberOfLines={1} ellipsizeMode="tail">{item.title}</Text>
+          </TouchableOpacity>
         )}
         showsVerticalScrollIndicator={false}
         />
@@ -184,24 +184,27 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center',
   },
   todoItem: {
-    overflow: 'scroll',
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#E6E6E6',
     marginHorizontal: wp(3),
     marginVertical: hp(1),
     borderRadius: wp(3.8),
-    padding: hp(1),
+    paddingVertical: hp(1),
+    paddingRight: wp(2),
+    paddingLeft: hp(1),
     height: hp(5.5),
   },
   circle: {
-    width: hp(2.2),
-    height: hp(2.2),
-    borderRadius: hp(1.1),
+    width: hp(2.8),
+    height: hp(2.8),
+    borderRadius: hp(0.8),
     borderWidth: wp(0.8),
-    marginRight: wp(3),
+    marginRight: wp(2.5),
+    marginLeft: wp(0.5),
   },
   todoText: {
+    flex: 1,
     fontSize: hp(1.9),
     color: '#4F704F',
     fontFamily: 'Poppins_600SemiBold',

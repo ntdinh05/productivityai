@@ -70,10 +70,13 @@ const Pomodoro = () => {
       <View style={styles.tasksSection}>
         <Text style={styles.taskTitle}>Task</Text>
         <ScrollView style={styles.taskList}>
-          {['Task name', 'Task name', 'Task name'].map((task, index) => (
-            <TouchableOpacity key={index} style={styles.taskItem}>
+          {['Apply responsive design for the App', 
+            'Implement dark mode', 
+            'Fix bugs',
+          ].map((task, index) => (
+            <TouchableOpacity key={index} style={[styles.taskItem, ]}>
               <View style={styles.taskLeftBorder} />
-              <Text style={styles.taskText}>{task}</Text>
+              <Text style={[styles.taskText]} numberOfLines={1} ellipsizeMode="tail">{task}</Text>
               <TouchableOpacity style={styles.menuButton}>
                 <Text style={styles.menuDots}>⋯</Text>
               </TouchableOpacity>
@@ -157,7 +160,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   taskItem: {
-    overflow: 'hidden',
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#D8D6CD',
