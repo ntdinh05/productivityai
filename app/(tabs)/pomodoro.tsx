@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons'
 import React, { useState } from 'react'
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen'
 import { SafeAreaView } from 'react-native-safe-area-context'
 
 const Pomodoro = () => {
@@ -52,7 +53,7 @@ const Pomodoro = () => {
 
         {/* Timer Display */}
         <View style={styles.timerContainer}>
-          <Ionicons name="timer-outline" size={30} color="#FFFFFF" />
+          <Ionicons name="timer-outline" size={wp(7)} color="#FFFFFF" />
           <Text style={styles.timerText}>{time}</Text>
           <TouchableOpacity 
             style={styles.startButton}
@@ -69,10 +70,13 @@ const Pomodoro = () => {
       <View style={styles.tasksSection}>
         <Text style={styles.taskTitle}>Task</Text>
         <ScrollView style={styles.taskList}>
-          {['Task name', 'Task name', 'Task name'].map((task, index) => (
-            <TouchableOpacity key={index} style={styles.taskItem}>
+          {['Apply responsive design for the App', 
+            'Implement dark mode', 
+            'Fix bugs',
+          ].map((task, index) => (
+            <TouchableOpacity key={index} style={[styles.taskItem, ]}>
               <View style={styles.taskLeftBorder} />
-              <Text style={styles.taskText}>{task}</Text>
+              <Text style={[styles.taskText]} numberOfLines={1} ellipsizeMode="tail">{task}</Text>
               <TouchableOpacity style={styles.menuButton}>
                 <Text style={styles.menuDots}>⋯</Text>
               </TouchableOpacity>
@@ -88,69 +92,69 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F1F0E9',
-    paddingVertical: 10,
-    paddingHorizontal: 25,
+    paddingVertical: hp(1.2),
+    paddingHorizontal: wp(7),
   },
   title: {
-    fontSize: 26,
+    fontSize: wp(6.5),
     fontFamily: 'Poppins-SemiBold',
-    marginBottom: 20,
-    // paddingLeft: 10,
+    marginBottom: hp(2.5),
   },
   modeContainer: {
     flexDirection: 'row',
-    paddingTop: 30,
-    paddingHorizontal: 20,
-    justifyContent: 'space-around',
-  
+    paddingTop: hp(3),
+    paddingHorizontal: wp(5),
+    justifyContent: 'center',
+    
   },
   clockContainer: {
     backgroundColor: '#41644A',
-    borderRadius: 22,
-    marginBottom: 50,
+    borderRadius: wp(5.5),
+    marginBottom: hp(6),
   },
   modeButton: {
-    paddingVertical: 5,
-    paddingHorizontal: 16,
-    borderRadius: 22,
-    borderWidth: 3,
+    paddingVertical: hp(0.6),
+    paddingHorizontal: wp(2.5),
+    borderRadius: wp(5.5),
+    borderWidth: wp(0.75),
     borderColor: '#ABB0BC',
+    marginHorizontal: wp(1),
   },
   selectedMode: {
     borderColor: '#E9762B',
   },
   modeText: {
     fontFamily: 'Poppins-SemiBold',
+    fontSize: wp(3.5),
   },
   timerContainer: {
     alignItems: 'center',
-    marginVertical: 40,
+    marginVertical: hp(2),
   },
   timerText: {
-    fontSize: 85,
+    fontSize: wp(21),
     fontFamily: 'Poppins-SemiBold',
     color: '#FFFFFF',
   },
   startButton: {
     backgroundColor: '#F86F03',
-    paddingVertical: 12,
-    paddingHorizontal: 40,
-    borderRadius: 25,
-    marginTop: 30,
+    paddingVertical: hp(1.5),
+    paddingHorizontal: wp(10),
+    borderRadius: wp(6),
+    marginTop: hp(2),
   },
   startButtonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: wp(4.5),
     fontFamily: 'Poppins-SemiBold',
   },
   tasksSection: {
     flex: 1,
   },
   taskTitle: {
-    fontSize: 24,
+    fontSize: wp(5.8),
     fontFamily: 'Poppins-SemiBold',
-    marginBottom: 15,
-    // paddingLeft: 10,
+    marginBottom: hp(1.8),
   },
   taskList: {
     flex: 1,
@@ -159,25 +163,25 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#D8D6CD',
-    marginBottom: 10,
-    height: 60,
+    marginBottom: hp(1.3),
+    height: hp(7),
   },
   taskLeftBorder: {
-    width: 12,
+    width: wp(3),
     height: '100%',
     backgroundColor: '#F86F03'
   },
   taskText: {
     flex: 1,
-    marginLeft: 15,
+    marginLeft: wp(3.8),
     fontFamily: 'Poppins-SemiBold',
-    fontSize: 16,
+    fontSize: wp(4),
   },
   menuButton: {
-    padding: 15,
+    padding: wp(3.8),
   },
   menuDots: {
-    fontSize: 24,
+    fontSize: wp(6),
     color: '#666',
   },
 })

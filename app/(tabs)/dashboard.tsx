@@ -1,16 +1,17 @@
-import React, { useState } from 'react'
-import { StyleSheet, Text, View, FlatList, TouchableOpacity } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import React, { useState } from 'react';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 const initialTasks = [
-  { id: '1', title: 'Complete React Native project', completed: true },
+  { id: '1', title: 'Complete React Native project before deadline', completed: true },
   { id: '2', title: 'Review code for pull request', completed: false },
   { id: '3', title: 'Attend team meeting', completed: false },
   { id: '4', title: 'Update documentation', completed: true },
   { id: '5', title: 'Plan next sprint', completed: false },
   { id: '6', title: 'Fix bugs', completed: false },
   { id: '7', title: 'Write tests', completed: false },
-  { id: '8', title: 'Deploy to production', completed: false },
 ]
 
 const dashboard = () => {
@@ -30,7 +31,7 @@ const dashboard = () => {
       {/* Bar Chart Mockup */}
       <View style={styles.chartContainer}>
         <View style={styles.barRow}>
-          {[100, 80, 120, 50, 40, 60, 50, 100].map((height, idx) => (
+          {[hp(10), hp(8), hp(9), hp(5), hp(7), hp(6), hp(9.5)].map((height, idx) => (
             <View key={idx} style={[styles.bar, { height }]} />
           ))}
         </View>
@@ -42,7 +43,7 @@ const dashboard = () => {
           <Text style={styles.iconLabelTop}>Streaks</Text>
           <View style={styles.iconBox}>
             <View style={styles.streakIcon}>
-              <Text style={{ fontSize: 40 }}>🔥</Text>
+              <Text style={{ fontSize: hp(5) }}>🔥</Text>
             </View>
           </View>
         </View>
@@ -50,31 +51,31 @@ const dashboard = () => {
           <Text style={styles.iconLabelTop}>Awards</Text>
           <View style={styles.iconBox}>
             <View style={styles.awardIcon}>
-              <Text style={{ fontSize: 40 }}>🏅</Text>
+              <Text style={{ fontSize: hp(5) }}>🏅</Text>
             </View>
           </View>
         </View>
       </View>
       {/* To Do List */}
-      <View style={[styles.todoContainer, { maxHeight: 250 }]}>
+      <View style={[styles.todoContainer]}>
       <Text style={styles.todoHeader}>To do list:</Text>
       <FlatList
         data={tasks}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
-          <View style={styles.todoItem}>
+          <TouchableOpacity style={styles.todoItem}>
             <TouchableOpacity onPress={() => toggleTask(item.id)}>
               <View style={[
                 styles.circle,
-                { backgroundColor: item.completed ? '#4F704F' : 'transparent', borderColor: '#4F704F', justifyContent: 'center', alignItems: 'center' }
+                { backgroundColor: item.completed ? '#4F704F' : 'transparent', borderColor: '#4F704F', justifyContent: 'center', alignItems: 'center'}
               ]}>
                 {item.completed && (
-                  <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>✓</Text>
+                  <Text style={{ color: '#fff', fontSize: hp(1.6), fontWeight: 'bold' }}>✓</Text>
                 )}
               </View>
             </TouchableOpacity>
-            <Text style={styles.todoText}>{item.title}</Text>
-          </View>
+            <Text style={styles.todoText} numberOfLines={1} ellipsizeMode="tail">{item.title}</Text>
+          </TouchableOpacity>
         )}
         showsVerticalScrollIndicator={false}
         />
@@ -89,120 +90,123 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F6F5ED',
-    marginHorizontal: 30,
+    paddingHorizontal: wp(7),
+    paddingVertical: hp(1.2),
   },
   summary: {
+    fontSize: wp(6.5),
     fontFamily: 'Poppins_600SemiBold',
-    fontSize: 32,
-    fontWeight: 'bold',
     color: '#222',
-    marginTop: 30,
-    marginBottom: 30,
+    marginBottom: hp(3),
   },
   chartContainer: {
     backgroundColor: '#fff',
-    borderRadius: 22,
-    borderWidth: 2,
+    borderRadius: wp(5.5),
+    borderWidth: wp(0.5),
     borderColor: '#C9C9B6',
-    padding: 20,
-    marginBottom: 20,
+    paddingHorizontal: wp(5),
+    paddingVertical: hp(2),
+    marginBottom: hp(2),
     alignItems: 'center',
   },
   barRow: {
     flexDirection: 'row',
     alignItems: 'flex-end',
-    height: 120,
+    height: hp(10),
     justifyContent: 'space-between',
     width: '100%',
   },
   bar: {
-    width: 18,
+    width: wp(5),
     backgroundColor: '#E17B2F',
-    borderRadius: 6,
-    marginHorizontal: 5,
+    borderRadius: wp(1.5),
+    marginHorizontal: wp(2),
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 18,
-    gap:20
+    marginBottom: hp(2),
+    gap: wp(5),
   },
   iconLabelTop: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: hp(2.5),
+    fontFamily: 'Poppins_600SemiBold',
     color: '#4F704F',
-    marginBottom: 3,
+    marginBottom: hp(1),
   },
   iconBox: {
     backgroundColor: '#fff',
-    borderRadius: 16,
-    borderWidth: 2,
+    borderRadius: wp(4),
+    borderWidth: wp(0.5),
     borderColor: '#C9C9B6',
     alignItems: 'center',
-    marginHorizontal: 0,
-    paddingVertical: 12,
-    height: 160,
-    width: 170,
+    paddingVertical: hp(0),
+    height: hp(16),
+    width: wp(37),
     },
   streakIcon: {
-    width: 70,
-    height: 70,
-    borderRadius: 16,
+    width: wp(17),
+    height: hp(16),
+    borderRadius: wp(4),
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 4,
+    marginBottom: hp(1),
   },
   awardIcon: {
-    width: 70,
-    height: 70,
-    borderRadius: 16,
+    width: wp(17),
+    height: hp(16),
+    borderRadius: wp(4),
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 4,
   },
   todoContainer: {
     backgroundColor: '#fff',
-    borderRadius: 22,
-    borderWidth: 2,
+    borderRadius: wp(5.5),
+    borderWidth: wp(0.5),
     borderColor: '#4F704F',
-    marginTop: 8,
+    marginTop: hp(1),
     overflow: 'hidden',
-    maxHeight: 500,},
-  
+    maxHeight: hp(31), // Limit height to 50% of screen height
+  },
+
   todoHeader: {
     backgroundColor: '#4F704F',
     color: '#fff',
-    fontSize: 22,
-    fontWeight: 'bold',
-    paddingVertical: 16,
-    paddingHorizontal: 16,
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
-    marginBottom: 8,
-    height: 60,
-  
+    fontSize: hp(2.5),
+    fontFamily: 'Poppins_600SemiBold',
+    paddingVertical: hp(2),
+    paddingHorizontal: wp(4),
+    borderTopLeftRadius: wp(4),
+    borderTopRightRadius: wp(4),
+    marginBottom: hp(1),
+    height: hp(6), // Fixed height for header
+    textAlign: 'left',
+    textAlignVertical: 'center',
   },
   todoItem: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#E6E6E6',
-    marginHorizontal: 12,
-    marginVertical: 12,
-    borderRadius: 15,
-    padding: 8,
-    height: 50,
+    marginHorizontal: wp(3),
+    marginVertical: hp(1),
+    borderRadius: wp(3.8),
+    paddingVertical: hp(1),
+    paddingRight: wp(2),
+    paddingLeft: hp(1),
+    height: hp(5.5),
   },
   circle: {
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    borderWidth: 3,
-    marginRight: 12,
+    width: hp(2.8),
+    height: hp(2.8),
+    borderRadius: hp(0.8),
+    borderWidth: wp(0.8),
+    marginRight: wp(2.5),
+    marginLeft: wp(0.5),
   },
   todoText: {
-    fontFamily: 'Poppins_600SemiBold',
-    fontSize: 17,
+    flex: 1,
+    fontSize: hp(1.9),
     color: '#4F704F',
-    fontWeight: '600',
+    fontFamily: 'Poppins_600SemiBold',
   },
 })

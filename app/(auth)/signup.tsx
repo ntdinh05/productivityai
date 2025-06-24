@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import React, { useState } from 'react';
 import { Alert, Image, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SignupPage = () => {
@@ -149,84 +150,84 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 20,
+    paddingHorizontal: wp(5),
     alignItems: 'center',
   },
   iconContainer: {
-    marginBottom: 20,
+    marginBottom: hp(2),
   },
   icon: {
-    width: 60,
-    height: 60,
+    width: wp(12),
+    height: wp(12),
   },
   title: {
-    fontSize: 24,
+    fontSize: hp(2.8),
     fontFamily: 'Poppins-SemiBold',
-    marginBottom: 30,
+    marginBottom: hp(2.5),
     color: '#000',
   },
   form: {
     width: '100%',
   },
   label: {
-    fontSize: 16,
-    marginBottom: 8,
+    fontSize: hp(1.8),
+    marginBottom: hp(0.8),
     color: '#333',
     fontFamily: 'Poppins-Regular',
   },
   input: {
-    height: 50,
+    height: hp(5.2),
     width: '100%',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    marginBottom: 20,
-    fontSize: 16,
+    borderWidth: wp(0.3),
+    borderColor: 'black',
+    borderRadius: wp(2),
+    paddingHorizontal: wp(4),
+    marginBottom: hp(2),
+    fontSize: hp(1.8),
     backgroundColor: '#fff',
     fontFamily: 'Poppins-Regular',
   },
   signUpButton: {
     width: '100%',
     backgroundColor: '#0B4619',
-    padding: 15,
-    borderRadius: 8,
+    padding: wp(3),
+    borderRadius: wp(2),
     alignItems: 'center',
-    marginTop: 10,
+    marginTop: hp(1),
   },
   signUpButtonText: {
     color: '#fff',
-    fontSize: 16,
+    fontSize: hp(1.8),
     fontFamily: 'Poppins-SemiBold',
   },
   orText: {
     textAlign: 'center',
-    marginVertical: 20,
+    marginVertical: hp(2),
     color: '#666',
     fontFamily: 'Poppins-Regular',
   },
   socialButtons: {
     flexDirection: 'row',
     justifyContent: 'center',
-    gap: 20,
+    gap: wp(4),
   },
   socialButton: {
-    width: 100,
-    height: 50,
-    borderWidth: 1,
+    width: wp(20),
+    height: hp(5),
+    borderWidth: wp(0.3),
     borderColor: '#ddd',
-    borderRadius: 8,
+    borderRadius: wp(2),
     justifyContent: 'center',
     alignItems: 'center',
   },
   socialIcon: {
-    width: 24,
-    height: 24,
+    width: wp(5),
+    height: wp(5),
   },
   signInContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 30,
+    marginTop: hp(3.5),
   },
   signInText: {
     color: '#666',
@@ -239,7 +240,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 12, // Optional, for spacing between fields (React Native 0.71+)
+    gap: wp(3), // Updated to responsive gap
   },
   halfInputContainer: {
     flex: 1,
