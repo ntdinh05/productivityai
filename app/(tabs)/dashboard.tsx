@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
   },
   summary: {
+    fontFamily: 'Poppins_600SemiBold',
     fontSize: 32,
     fontWeight: 'bold',
     color: '#222',
@@ -168,7 +169,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     maxHeight: 500,},
   
-    todoHeader: {
+  todoHeader: {
     backgroundColor: '#4F704F',
     color: '#fff',
     fontSize: 22,
@@ -199,6 +200,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   todoText: {
+    fontFamily: 'Poppins_600SemiBold',
     fontSize: 17,
     color: '#4F704F',
     fontWeight: '600',
