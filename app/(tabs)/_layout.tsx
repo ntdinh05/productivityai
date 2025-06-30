@@ -1,5 +1,4 @@
 // Rest of the import statements
-import { Poppins_400Regular, Poppins_500Medium, Poppins_600SemiBold, useFonts } from '@expo-google-fonts/poppins';
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from 'expo-router';
 
@@ -8,7 +7,6 @@ import { Tabs } from 'expo-router';
 
 import * as SplashScreen from 'expo-splash-screen';
 
-import { useEffect } from 'react';
 import { StyleSheet } from "react-native";
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
@@ -17,21 +15,21 @@ SplashScreen.preventAutoHideAsync();
 
 
 export default function TabsLayout() {
-  const [loaded, error] = useFonts({
-    Poppins_400Regular,
-    Poppins_500Medium,
-    Poppins_600SemiBold
-  });
+//   const [loaded, error] = useFonts({
+//     Poppins_400Regular,
+//     Poppins_500Medium,
+//     Poppins_600SemiBold
+//   });
 
-  useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, error]);
+//   useEffect(() => {
+//     if (loaded || error) {
+//       SplashScreen.hideAsync();
+//     }
+//   }, [loaded, error]);
 
-  if (!loaded && !error) {
-    return null;
-  }
+//   if (!loaded && !error) {
+//     return null;
+//   }
 
   return (
     <Tabs

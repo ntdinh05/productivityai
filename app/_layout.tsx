@@ -54,7 +54,7 @@ export default function RootLayout() {
           headerStyle: { backgroundColor: '#F1F0E9' },
         }}
       />
-      
+    
     </Stack>
   )
 }
