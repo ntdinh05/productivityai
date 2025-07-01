@@ -18,12 +18,12 @@ const pomodoroStyles = StyleSheet.create({
     paddingTop: hp(3),
     paddingHorizontal: wp(5),
     justifyContent: 'center',
-    
   },
-  clockContainer: {
+  modeSectionContainer: {
+    flexDirection: 'column',
     backgroundColor: '#41644A',
     borderRadius: wp(5.5),
-    marginBottom: hp(6),
+    marginBottom: hp(2),
   },
   modeButton: {
     paddingVertical: hp(0.6),
@@ -44,17 +44,51 @@ const pomodoroStyles = StyleSheet.create({
     alignItems: 'center',
     marginVertical: hp(2),
   },
+  timerTextContainer: {
+    width: wp(60), // Fixed width for consistent positioning
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginVertical: hp(2),
+  },
   timerText: {
-    fontSize: wp(21),
+    fontSize: wp(18),
     fontFamily: 'Poppins-SemiBold',
     color: '#FFFFFF',
+    textAlign: 'center',
+    fontVariant: ['tabular-nums'], // Monospace numbers for consistent width
+    includeFontPadding: false, // Removes extra padding on Android
+  },
+  timerTextFixedWidth: {
+    fontSize: wp(18),
+    height: hp(11), // Fixed height for timer text
+    width: wp(30), // Fixed width for each part of the timer
+  },
+  timerColon: {
+    width: wp(5), // Fixed width for the colon
+    textAlign: 'center',
+  },
+  timerControls: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    paddingHorizontal: wp(8),
+    marginTop: hp(2),
+  },
+  timerControlButton: {
+    width: wp(12),
+    height: wp(12),
+    borderRadius: wp(6),
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
   },
   startButton: {
     backgroundColor: '#F86F03',
     paddingVertical: hp(1.5),
     paddingHorizontal: wp(10),
     borderRadius: wp(6),
-    marginTop: hp(2),
   },
   startButtonText: {
     color: '#fff',
