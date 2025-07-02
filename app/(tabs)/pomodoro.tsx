@@ -1,10 +1,9 @@
 import { Ionicons } from '@expo/vector-icons'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import pomodoroStyles from '../../styles/pomodoro'; // Adjust the import path as necessary
-import { useFilterScreenChildren } from 'expo-router/build/layouts/withLayoutContext'
 
 const Pomodoro = () => {
   const [selectedMode, setSelectedMode] = useState('Timer')
@@ -19,15 +18,12 @@ const Pomodoro = () => {
     'Long Break': 15 * 60, // 15 minutes
   }
   
-  const formatTime = (seconds) => {
+  const formatTime = (seconds: any) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   }
-  
-  useEffect(() => {
-    if (isRunning && timeLeft > 0) {
-      intervalRef.current = set
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Pomodoro</Text>
