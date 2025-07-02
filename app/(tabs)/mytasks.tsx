@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TaskList from '../(components)/tasklist';
+import TodayTask from '../(components)/todaytask';
+
 enum GOAL {
   daily = "Daily",
   weekly = "Weekly",
@@ -35,6 +37,7 @@ const MyTasks = () => {
         <Text style={styles.headerTitle}>My tasks</Text>
       </View>
       {/* Todos list */}
+      <TodayTask/>
       <TaskList/>
       <TouchableOpacity style={styles.fab} onPress={() => { /* TODO: Add task logic */ }}>
         <Text style={styles.fabText}>+</Text>
