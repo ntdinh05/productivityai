@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TaskList from '../(components)/tasklist';
+import TaskModal from '../(components)/taskmodal';
 import TodayTask from '../(components)/todaytask';
+import { useTask } from '../(context)/TaskContext';
 
 enum GOAL {
   daily = "Daily",
@@ -29,100 +32,72 @@ interface Task {
 }
 
 const MyTasks = () => {
-  const [todos, setTodos] = useState<Task[] | null>(null);
+  // const { modalVisible, selectedTask } = useTask();
+  // const {task, openTaskInMyTasks} = useTask();
+
+  // This will ensure the modal shows when navigating to this tab
+  useFocusEffect(
+    React.useCallback(() => {
+      // Modal will automatically show if modalVisible is true from context
+    }, [])
+  );
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.headerRow}>
         <Text style={styles.headerTitle}>My tasks</Text>
       </View>
-      {/* Todos list */}
       <TodayTask/>
       <TaskList/>
       <TouchableOpacity style={styles.fab} onPress={() => { /* TODO: Add task logic */ }}>
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
+      
+      {/* Task Modal - will show when modalVisible is true */}
+      <TaskModal />
     </SafeAreaView>
-
   )
 }
-
-export default MyTasks;
 
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#F6F5EF',
+    backgroundColor: '#F1F0E9',
+    paddingHorizontal: 16,
   },
   headerRow: {
-    marginTop: 24,
-    marginBottom: 0,
-    marginLeft: 18,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+    marginTop: 10,
   },
   headerTitle: {
     fontSize: 28,
-    fontWeight: '700',
-    color: '#222',
-    letterSpacing: 0.2,
-  },
-  container: {
-    backgroundColor: 'transparent',
-    flex: 1,
-    paddingHorizontal: 8,
-    paddingTop: 0,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#fff',
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: '#D9D9D9',
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    marginBottom: 10,
-    marginTop: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 1,
-  },
-  summaryTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#2E5D3B',
-    flex: 1,
-  },
-  summaryPercent: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#2E5D3B',
-    textAlign: 'right',
-    flex: 1,
+    fontWeight: 'bold',
+    color: '#333',
   },
   fab: {
     position: 'absolute',
-    right: 24,
-    bottom: 36,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#2E5D3B',
-    alignItems: 'center',
+    bottom: 30,
+    right: 30,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#E9762B',
     justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 8,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.18,
+    shadowOpacity: 0.25,
     shadowRadius: 4,
-    elevation: 4,
-    zIndex: 10,
   },
   fabText: {
+    fontSize: 24,
     color: '#fff',
-    fontSize: 32,
-    fontWeight: '700',
-    marginTop: -2,
+    fontWeight: 'bold',
   },
 });
+
+export default MyTasks;

@@ -2,6 +2,8 @@
 import { Poppins_400Regular, Poppins_500Medium, Poppins_600SemiBold, useFonts } from '@expo-google-fonts/poppins';
 import { Stack } from 'expo-router';
 import React from 'react';
+import { TaskProvider } from './(context)/TaskContext';
+
 
 
 import * as SplashScreen from 'expo-splash-screen';
@@ -30,31 +32,32 @@ export default function RootLayout() {
   }
 
   return (
-    <Stack>
-      <Stack.Screen
-        name="(tabs)"
-        options={{
-          headerShown: false,
-          title: 'Home',
+    <TaskProvider>
+      <Stack>
+        <Stack.Screen
+          name="(tabs)"
+          options={{
+            headerShown: false,
+            title: 'Home',
 
-        }}
-      />
-      <Stack.Screen
-        name="(auth)/login"
-        options={{
-          title: 'Sign In',
-          headerStyle: { backgroundColor: '#F1F0E9' },
-          
-        }}
-      />
-      <Stack.Screen
-        name="(auth)/signup"
-        options={{
-          title: 'Sign Up',
-          headerStyle: { backgroundColor: '#F1F0E9' },
-        }}
-      />
-    
-    </Stack>
+          }}
+        />
+        <Stack.Screen
+          name="(auth)/login"
+          options={{
+            title: 'Sign In',
+            headerStyle: { backgroundColor: '#F1F0E9' },
+            
+          }}
+        />
+        <Stack.Screen
+          name="(auth)/signup"
+          options={{
+            title: 'Sign Up',
+            headerStyle: { backgroundColor: '#F1F0E9' },
+          }}
+        />
+      </Stack>
+    </TaskProvider>
   )
 }

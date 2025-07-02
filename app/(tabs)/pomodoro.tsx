@@ -1,15 +1,19 @@
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from "expo-linear-gradient"; // or `import LinearGradient from "react-native-linear-gradient"`
+import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from "expo-linear-gradient";
 import React, { useEffect, useRef, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { TimerPickerModal } from "react-native-timer-picker";
-import pomodoroStyles from '../../styles/pomodoro'; // Adjust the import path as necessary
+import { useTask } from '../(context)/TaskContext';
+import pomodoroStyles from '../../styles/pomodoro';
 
 
 const Pomodoro = () => {
-  const [selectedMode, setSelectedMode] = useState<String>('Timer')
+  const navigation = useNavigation();
+  const { tasks, openTaskInMyTasks } = useTask();
+  const [selectedMode, setSelectedMode] = useState<string>('Timer')
   const [showPicker, setShowPicker] = useState(false)
   // const [time, setTime] = useState('25:00')
   const [timeLeft, setTimeLeft] = useState<number | null>(25 * 60) // 25 minutes in seconds
@@ -53,7 +57,7 @@ const Pomodoro = () => {
     }
   }, [timeLeft])
 
-  const handleModeChange = (mode : String) => {
+  const handleModeChange = (mode : string) => {
     setSelectedMode(mode);
     setTimeLeft(timePresets[mode]);
     setIsRunning(false);
@@ -75,6 +79,10 @@ const Pomodoro = () => {
   const handlePickerOpen = () => {
     setShowPicker(true);
   }
+
+  const handleTaskClick = (task) => {
+    openTaskInMyTasks(task, navigation);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -125,8 +133,9 @@ const Pomodoro = () => {
             <Text style={[styles.timerText, styles.timerColon]}>:</Text>
             <Text style={[styles.timerText, styles.timerTextFixedWidth]}>{formatSeconds(timeLeft)}</Text>
           </View>
+          
+          {/* Timer Controls */}
           <View style={styles.timerControls}>
-
             <TouchableOpacity 
               style={styles.timerControlButton}
               onPress={() => {
@@ -146,60 +155,27 @@ const Pomodoro = () => {
               </Text>
             </TouchableOpacity>
             
-            <TouchableOpacity style={styles.timerControlButton} onPress={handlePickerOpen}>
+            <TouchableOpacity style={styles.timerControlButton} onPress={() => setShowPicker(true)}>
               <Ionicons name="ellipsis-horizontal-outline" size={wp(7)} color="#FFFFFF" />
             </TouchableOpacity>
-
-
-            <TimerPickerModal
-              visible={showPicker}
-              setIsVisible={setShowPicker}
-              onConfirm={(pickedDuration) => {
-                handleTimeChange(pickedDuration); // Pass picked duration to handleTimeChange
-                setShowPicker(false); // Close the picker
-              }}
-              modalTitle="Set Time"
-              onCancel={() => setShowPicker(false)}
-              closeOnOverlayPress
-              hideHours
-              LinearGradient={LinearGradient}
-              styles={{
-                modalTitle: {
-                  fontFamily: 'Poppins-SemiBold',
-                },
-                text: {
-                  fontFamily: 'Poppins-SemiBold',
-                },
-                theme: "light",
-                backgroundColor: "#F1F0E9",
-                confirmButton:{
-                  backgroundColor: "#E9762B",
-                  borderColor: "#E9762B",
-                  fontFamily: 'Poppins-SemiBold',
-                  color: "#FFFFFF",
-                },
-                cancelButton: {
-                  fontFamily: 'Poppins-SemiBold', 
-                }
-              }}
-            />
           </View>
         </View>
       </View>
 
       {/* Tasks Section */}
       <View style={styles.tasksSection}>
-        <Text style={styles.taskTitle}>Task</Text>
+        <Text style={styles.taskTitle}>Tasks</Text>
         <ScrollView style={styles.taskList}>
-          {['Apply responsive design for the App', 
-            'Implement dark mode', 
-            'Fix bugs',
-            'Attend team meeting',
-            'Update documentation',
-          ].map((task, index) => (
-            <TouchableOpacity key={index} style={[styles.taskItem, ]}>
+          {tasks.map((task) => (
+            <TouchableOpacity 
+              key={task.id} 
+              style={styles.taskItem}
+              onPress={() => handleTaskClick(task)}
+            >
               <View style={styles.taskLeftBorder} />
-              <Text style={[styles.taskText]} numberOfLines={1} ellipsizeMode="tail">{task}</Text>
+              <Text style={styles.taskText} numberOfLines={1} ellipsizeMode="tail">
+                {task.title}
+              </Text>
               <TouchableOpacity style={styles.menuButton}>
                 <Text style={styles.menuDots}>⋯</Text>
               </TouchableOpacity>
@@ -207,9 +183,33 @@ const Pomodoro = () => {
           ))}
         </ScrollView>
       </View>
+
+      {/* Timer Picker Modal */}
+      <TimerPickerModal
+        visible={showPicker}
+        setIsVisible={setShowPicker}
+        onConfirm={(pickedDuration) => {
+          handleTimeChange(pickedDuration);
+          setShowPicker(false);
+        }}
+        modalTitle="Set Time"
+        onCancel={() => setShowPicker(false)}
+        closeOnOverlayPress
+        hideHours
+        LinearGradient={LinearGradient}
+        styles={{
+          theme: "light",
+          backgroundColor: "#F1F0E9",
+          confirmButton: {
+            backgroundColor: "#E9762B",
+            borderColor: "#E9762B",
+            color: '#FFFFFF',
+          },
+        }}
+      />
     </SafeAreaView>
   )
 }
 
-const styles = pomodoroStyles
-export default Pomodoro
+const styles = pomodoroStyles;
+export default Pomodoro;

@@ -1,48 +1,14 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState } from 'react';
 import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import TaskModal from './taskmodal';
+import { useTask } from '../(context)/TaskContext';
+import { useNavigation } from '@react-navigation/native';
 
-const dummyTasks = [
-  {
-    id: 1,
-    title: 'Productivity AI Project',
-    time: '18:00',
-    progress: 'In Progress',
-  },
-  {
-    id: 2,
-    title: 'Homework',
-    time: '18:00',
-    progress: 'Not Started',
-  },
-  {
-    id: 3,
-    title: 'Homework',
-    time: '18:00',
-    progress: 'Not Started',
-  },
-  {
-    id: 4,
-    title: 'Homework',
-    time: '18:00',
-    progress: 'Completed',
-  },
-];
 
 function TaskList() {
-  const [tasks, setTasks] = useState(dummyTasks);
-  const [selectedTask, setSelectedTask] = useState(null); // Track the selected task
-  const [modalVisible, setModalVisible] = useState(false); // Track modal visibility
-
-  const openTaskModal = (task) => {
-    setSelectedTask(task); // Set the selected task
-    setModalVisible(true); // Open the modal
-  };
-
-  const closeTaskModal = () => {
-    setModalVisible(false); // Close the modal
-    setSelectedTask(null); // Clear the selected task
-  };
+  const { tasks, modalVisible, closeTaskModal, openTaskInMyTasks, openTaskModal } = useTask();
+  // const navigation = useNavigation();
 
   return (
     <View style={{ alignItems: 'center', width: '100%' }}>
@@ -57,7 +23,7 @@ function TaskList() {
             <TouchableOpacity
               style={styles.taskRow}
               key={item.id}
-              onPress={() => openTaskModal(item)} // Open modal on task click
+              onPress={() => {openTaskModal(item)}} // Open modal on task click
             >
               <View style={styles.leftSection}>
                 <Text style={styles.taskTitle}>{item.title}</Text>
@@ -83,23 +49,7 @@ function TaskList() {
       </View>
 
       {/* Modal for Task Details */}
-      <Modal
-        visible={modalVisible}
-        animationType="fade"
-        transparent={true}
-        onRequestClose={closeTaskModal} // Close modal on back press
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{selectedTask?.title}</Text>
-            <Text style={styles.modalText}>Time: {selectedTask?.time}</Text>
-            <Text style={styles.modalText}>Progress: {selectedTask?.progress}</Text>
-            <TouchableOpacity style={styles.closeButton} onPress={closeTaskModal}>
-              <Text style={styles.closeButtonText}>Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <TaskModal/>
     </View>
   );
 }
