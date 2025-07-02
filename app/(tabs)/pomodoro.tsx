@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from "expo-linear-gradient"; // or `import LinearGradient from "react-native-linear-gradient"`
 import React, { useEffect, useRef, useState } from 'react';
@@ -7,6 +8,14 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { TimerPickerModal } from "react-native-timer-picker";
 import pomodoroStyles from '../../styles/pomodoro'; // Adjust the import path as necessary
 
+=======
+import { Ionicons } from '@expo/vector-icons'
+import React, { useRef, useState } from 'react'
+import { ScrollView, Text, TouchableOpacity, View } from 'react-native'
+import { widthPercentageToDP as wp } from 'react-native-responsive-screen'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import pomodoroStyles from '../../styles/pomodoro'; // Adjust the import path as necessary
+>>>>>>> 184019e29de899aa210f9b3f8136ea270be1396d
 
 const Pomodoro = () => {
   const [selectedMode, setSelectedMode] = useState<String>('Timer')
@@ -21,7 +30,18 @@ const Pomodoro = () => {
     'Long Break': 15 * 60, // 15 minutes in seconds
   });
 
+<<<<<<< HEAD
   const formatSeconds = (seconds : number) => {
+=======
+  const timePresets = {
+    'Timer': 25 * 60, // 25 minutes
+    'Short Break': 5 * 60, // 5 minutes
+    'Long Break': 15 * 60, // 15 minutes
+  }
+  
+  const formatTime = (seconds: any) => {
+    const mins = Math.floor(seconds / 60);
+>>>>>>> 184019e29de899aa210f9b3f8136ea270be1396d
     const secs = seconds % 60;
     return secs.toString().padStart(2, '0');
   }
@@ -34,6 +54,7 @@ const Pomodoro = () => {
     // If the time is a string (e.g., "25:00"), split and convert
     return pickedDuration.minutes * 60 + pickedDuration.seconds;
   }
+<<<<<<< HEAD
   
   useEffect(() => {
     
@@ -75,6 +96,8 @@ const Pomodoro = () => {
   const handlePickerOpen = () => {
     setShowPicker(true);
   }
+=======
+>>>>>>> 184019e29de899aa210f9b3f8136ea270be1396d
 
   return (
     <SafeAreaView style={styles.container}>
