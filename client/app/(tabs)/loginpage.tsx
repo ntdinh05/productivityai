@@ -1,33 +1,13 @@
-import { Link } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, AppState, Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { supabase } from '../../lib/supabase'; // Adjust the path as needed
-import loginStyles from '../../styles/login'; // Adjust the import path as necessary
 
-AppState.addEventListener('change', (state) => {
-  if (state === 'active') {
-    supabase.auth.startAutoRefresh()
-  } else {
-    supabase.auth.stopAutoRefresh()
-  }
-})
 
 const LoginPage = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [loading, setLoading] = useState(false)
-  async function signInWithEmail() {
-    setLoading(true)
-    const { error } = await supabase.auth.signInWithPassword({
-      email: email,
-      password: password,
-      
-    })
-    if (error) Alert.alert(error.message)
-    setLoading(false)
-  }
   
+    
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
@@ -42,7 +22,7 @@ const LoginPage = () => {
 
         {/* Title */}
         <Text style={styles.title}>Sign in your account</Text>
-        
+
         {/* Form */}
         <View style={styles.form}>
           <Text style={[styles.label, styles.font]}>Email</Text>
@@ -50,7 +30,7 @@ const LoginPage = () => {
             style={styles.input}
             placeholder="example@gmail.com"
             value={email}
-            onChangeText={(text) => setEmail(text)}
+            onChangeText={setEmail}
             keyboardType="email-address"
             autoCapitalize="none"
           />
@@ -60,11 +40,11 @@ const LoginPage = () => {
             style={styles.input}
             placeholder="••••••••"
             value={password}
-            onChangeText={(text) => setPassword(text)}
+            onChangeText={setPassword}
             secureTextEntry
           />
 
-          <TouchableOpacity style={styles.signInButton} onPress={() => signInWithEmail()}>
+          <TouchableOpacity style={styles.signInButton}>
             <Text style={styles.signInText}>SIGN IN</Text>
           </TouchableOpacity>
 
@@ -89,14 +69,16 @@ const LoginPage = () => {
             <TouchableOpacity style={styles.socialButton}>
               <Image 
                 source={require('../../assets/logos/apple.png')}
-                style={styles.socialIcon}
+                style={styles.appleIcon}
               />
             </TouchableOpacity>
           </View>
 
           <View style={styles.signUpContainer}>
             <Text style={styles.signUpText}>Don't have an account? </Text>
-            <Link href="/signup" style={styles.signUpLink}>SIGN UP</Link>
+            <TouchableOpacity>
+              <Text style={styles.signUpLink}>SIGN UP</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -106,4 +88,106 @@ const LoginPage = () => {
 
 export default LoginPage
 
-const styles = loginStyles
+const styles = StyleSheet.create({
+  font: {
+    fontFamily: 'Poppins_400Regular',
+  },
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  content: {
+    flex: 1,
+    padding: 20,
+    alignItems: 'center',
+  },
+  iconContainer: {
+    marginTop: 40,
+    marginBottom: 20,
+  },
+  icon: {
+    width: 60,
+    height: 60,
+  },
+  title: {
+    fontSize: 24,
+    fontFamily: 'Poppins-SemiBold',
+    marginBottom: 30,
+    color: '#000',
+  },
+  form: {
+    width: '100%',
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 8,
+    color: '#333',
+    fontFamily: 'Poppins-Regular',
+  },
+  input: {
+    height: 50,
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    paddingHorizontal: 15,
+    marginBottom: 20,
+    fontSize: 16,
+    backgroundColor: '#fff',
+    fontFamily: 'Poppins-Regular',
+  },
+  signInButton: {
+    width: '100%',
+    backgroundColor: '#0B4619',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  signInText: {
+    color: '#fff',
+    fontSize: 16,
+    fontFamily: 'Poppins-SemiBold',
+  },
+  orText: {
+    textAlign: 'center',
+    marginVertical: 20,
+    color: '#666',
+    fontFamily: 'Poppins-Regular',
+  },
+  socialButtons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
+  },
+  socialButton: {
+    width: 100,
+    height: 50,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  socialIcon: {
+    width: 24,
+    height: 24,
+  },
+  appleIcon: {
+    width: 28,
+    height: 28,
+  },
+  signUpContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 30,
+  },
+  signUpText: {
+    color: '#666',
+    fontFamily: 'Poppins-Regular',
+  },
+  signUpLink: {
+    color: '#0B4619',
+    fontFamily: 'Poppins-SemiBold',
+  },
+})

@@ -1,15 +1,103 @@
-import React from 'react'
-import { StyleSheet, Text } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { useFocusEffect } from '@react-navigation/native';
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import TaskList from '../(components)/tasklist';
+import TaskModal from '../(components)/taskmodal';
+import TodayTask from '../(components)/todaytask';
+import { useTask } from '../(context)/TaskContext';
+
+enum GOAL {
+  daily = "Daily",
+  weekly = "Weekly",
+  monthly = "Monthly"
+}
+enum STATUS {
+  not_started = "Not started", 
+  in_progress = "In progress",
+  done = "Done"
+}
+
+interface Task {
+  id: string;
+  user_id: string;
+  title: string;
+  description?: string;
+  goal_type: GOAL;
+  status: STATUS;
+  tags: string[];
+  current_state: string;
+  desired_state: string;
+  created_at: Date;
+}
 
 const MyTasks = () => {
+  // const { modalVisible, selectedTask } = useTask();
+  // const {task, openTaskInMyTasks} = useTask();
+
+  // This will ensure the modal shows when navigating to this tab
+  useFocusEffect(
+    React.useCallback(() => {
+      // Modal will automatically show if modalVisible is true from context
+    }, [])
+  );
+
   return (
-    <SafeAreaView>
-      <Text>My Tasks</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <View style={styles.headerRow}>
+        <Text style={styles.headerTitle}>My tasks</Text>
+      </View>
+      <TodayTask/>
+      <TaskList/>
+      <TouchableOpacity style={styles.fab} onPress={() => { /* TODO: Add task logic */ }}>
+        <Text style={styles.fabText}>+</Text>
+      </TouchableOpacity>
+      
+      {/* Task Modal - will show when modalVisible is true */}
+      <TaskModal />
     </SafeAreaView>
   )
 }
 
-export default MyTasks
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F1F0E9',
+    paddingHorizontal: 16,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+    marginTop: 10,
+  },
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 30,
+    right: 30,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: '#E9762B',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+  },
+  fabText: {
+    fontSize: 24,
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+});
 
-const styles = StyleSheet.create({})
+export default MyTasks;

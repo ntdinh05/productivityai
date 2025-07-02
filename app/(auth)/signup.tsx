@@ -1,7 +1,8 @@
 import { supabase } from '@/lib/supabase';
 import React, { useState } from 'react';
-import { Alert, Image, Keyboard, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, Image, Keyboard, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import signupStyles from '../../styles/signup'; // Adjust the import path as necessary
 
 const SignupPage = () => {
   const [firstName, setFirstName] = useState('');
@@ -142,108 +143,6 @@ const SignupPage = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F1F0E9',
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 20,
-    alignItems: 'center',
-  },
-  iconContainer: {
-    marginBottom: 20,
-  },
-  icon: {
-    width: 60,
-    height: 60,
-  },
-  title: {
-    fontSize: 24,
-    fontFamily: 'Poppins-SemiBold',
-    marginBottom: 30,
-    color: '#000',
-  },
-  form: {
-    width: '100%',
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 8,
-    color: '#333',
-    fontFamily: 'Poppins-Regular',
-  },
-  input: {
-    height: 50,
-    width: '100%',
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    paddingHorizontal: 15,
-    marginBottom: 20,
-    fontSize: 16,
-    backgroundColor: '#fff',
-    fontFamily: 'Poppins-Regular',
-  },
-  signUpButton: {
-    width: '100%',
-    backgroundColor: '#0B4619',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  signUpButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontFamily: 'Poppins-SemiBold',
-  },
-  orText: {
-    textAlign: 'center',
-    marginVertical: 20,
-    color: '#666',
-    fontFamily: 'Poppins-Regular',
-  },
-  socialButtons: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 20,
-  },
-  socialButton: {
-    width: 100,
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  socialIcon: {
-    width: 24,
-    height: 24,
-  },
-  signInContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 30,
-  },
-  signInText: {
-    color: '#666',
-    fontFamily: 'Poppins-Regular',
-  },
-  signInLink: {
-    color: '#0B4619',
-    fontFamily: 'Poppins-SemiBold',
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 12, // Optional, for spacing between fields (React Native 0.71+)
-  },
-  halfInputContainer: {
-    flex: 1,
-  },
-});
+const styles = signupStyles
 
 export default SignupPage;
