@@ -8,11 +8,12 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { TimerPickerModal } from "react-native-timer-picker";
 import { useTask } from '../(context)/TaskContext';
 import pomodoroStyles from '../../styles/pomodoro';
+import TaskModal from '../(components)/taskmodal';
 
 
 const Pomodoro = () => {
-  const navigation = useNavigation();
-  const { tasks, openTaskInMyTasks } = useTask();
+  // const navigation = useNavigation();
+  const { tasks, openTaskModal, openTaskInMyTasks } = useTask();
   const [selectedMode, setSelectedMode] = useState<string>('Timer')
   const [showPicker, setShowPicker] = useState(false)
   // const [time, setTime] = useState('25:00')
@@ -81,7 +82,7 @@ const Pomodoro = () => {
   }
 
   const handleTaskClick = (task) => {
-    openTaskInMyTasks(task, navigation);
+    openTaskModal(task);
   };
 
   return (
@@ -207,6 +208,7 @@ const Pomodoro = () => {
           },
         }}
       />
+      <TaskModal/>
     </SafeAreaView>
   )
 }

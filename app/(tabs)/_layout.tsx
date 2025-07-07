@@ -15,99 +15,112 @@ SplashScreen.preventAutoHideAsync();
 
 
 export default function TabsLayout() {
-//   const [loaded, error] = useFonts({
-//     Poppins_400Regular,
-//     Poppins_500Medium,
-//     Poppins_600SemiBold
-//   });
+    //   const [loaded, error] = useFonts({
+    //     Poppins_400Regular,
+    //     Poppins_500Medium,
+    //     Poppins_600SemiBold
+    //   });
 
-//   useEffect(() => {
-//     if (loaded || error) {
-//       SplashScreen.hideAsync();
-//     }
-//   }, [loaded, error]);
+    //   useEffect(() => {
+    //     if (loaded || error) {
+    //       SplashScreen.hideAsync();
+    //     }
+    //   }, [loaded, error]);
 
-//   if (!loaded && !error) {
-//     return null;
-//   }
+    //   if (!loaded && !error) {
+    //     return null;
+    //   }
 
-  return (
-    <Tabs
-    screenOptions={{
-        tabBarStyle: styles.tabBar,
-        tabBarLabelStyle: styles.tabLabel,
-        headerShown: false,
-        tabBarShowLabel: false,
-        tabBarIconStyle: { display: 'contents' }, // Hide icons if not needed
-    }}
-    >
-        <Tabs.Screen
-            name="dashboard"
-            options={{
-                title: 'Dashboard',
+    return (
+        <Tabs
+            screenOptions={{
+                tabBarStyle: styles.tabBar,
+                tabBarLabelStyle: styles.tabLabel,
                 headerShown: false,
-                tabBarIcon: ({focused}) => (
-                    <Ionicons
-                        size={hp('3%')}
-                        name={focused ? "home" : "home-outline"}
-                    />
-                )
+                tabBarShowLabel: false,
+                tabBarIconStyle: { display: 'contents' }, // Hide icons if not needed
             }}
-        />
-        <Tabs.Screen
-            name="pomodoro"
-            options={{
-                title: 'Pomodoro',
-                headerShown: false,
-                tabBarIcon: ({focused}) => (
-                    <Ionicons
-                        size={hp('3%')}
-                        name={focused ? "timer" : "timer-outline"}
-                    />
-                )
-            }}
-        />
-        <Tabs.Screen
-            name="calendar"
-            options={{
-                title: 'Calendar',
-                headerShown: false,
-                tabBarIcon: ({focused}) => (
-                    <Ionicons
-                        size={hp('3%')}
-                        name={focused ? "calendar" : "calendar-outline"}
-                    />
-                )
-            }}
-        />
-        <Tabs.Screen
-            name="mytasks"
-            options={{
-                title: 'My Tasks',
-                headerShown: false,
-                tabBarIcon: ({focused}) => (
-                    <Ionicons
-                        size={hp('3%')}
-                        name={focused ? "list" : "list-outline"}
-                    />
-                )
-            }}
-        />
-        <Tabs.Screen
-            name="index"
-            options={{
-                title: 'Profile',
-                headerShown: false,
-                tabBarIcon: ({focused}) => (
-                    <Ionicons
-                        size={hp('3%')}
-                        name={focused ? "person" : "person-outline"}
-                    />
-                )
-            }}
-        />
-    </Tabs>
-  )
+        >
+            <Tabs.Screen
+                name="dashboard"
+                options={{
+                    title: 'Dashboard',
+                    headerShown: false,
+                    tabBarIcon: ({ focused }) => (
+                        <Ionicons
+                            size={hp('3%')}
+                            name={focused ? "home" : "home-outline"}
+                        />
+                    )
+                }}
+            />
+            <Tabs.Screen
+                name="pomodoro"
+                options={{
+                    title: 'Pomodoro',
+                    headerShown: false,
+                    tabBarIcon: ({ focused }) => (
+                        <Ionicons
+                            size={hp('3%')}
+                            name={focused ? "timer" : "timer-outline"}
+                        />
+                    )
+                }}
+            />
+            <Tabs.Screen
+                name="calendar"
+                options={{
+                    title: 'Calendar',
+                    headerShown: false,
+                    tabBarIcon: ({ focused }) => (
+                        <Ionicons
+                            size={hp('3%')}
+                            name={focused ? "calendar" : "calendar-outline"}
+                        />
+                    )
+                }}
+            />
+            <Tabs.Screen
+                name="mytasks"
+                options={{
+                    title: 'My Tasks',
+                    headerShown: false,
+                    tabBarIcon: ({ focused }) => (
+                        <Ionicons
+                            size={hp('3%')}
+                            name={focused ? "list" : "list-outline"}
+                        />
+                    )
+                }}
+            />
+            <Tabs.Screen
+                name="index"
+                options={{
+                    title: 'Profile',
+                    headerShown: false,
+                    tabBarIcon: ({ focused }) => (
+                        <Ionicons
+                            size={hp('3%')}
+                            name={focused ? "person" : "person-outline"}
+                        />
+                    )
+                }}
+            />
+            <Tabs.Screen
+                name="chatbox"
+                options={{
+                    title: 'Chat',
+                    headerShown: false,
+                    tabBarIcon: ({ focused }) => (
+                        <Ionicons
+                            size={hp('3%')}
+                            name={focused ? "chatbubble" : "chatbubble-outline"}
+                        />
+                    )
+                }}
+            />
+        </Tabs>
+    )
 }
 const styles = StyleSheet.create({
     tabBar: {
