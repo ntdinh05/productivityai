@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
-import { useTask } from '../(context)/TaskContext';
-
+import React, { useState } from 'react';
+import { Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { SubTask, useTask } from '../(context)/TaskContext';
+import AddSubTasks from './addsubtaskcomponent';
+import DisplaySubTaskComponent from './displaysubstackcomponent';
 interface AddTaskModalProps {
   visible: boolean;
   onClose: () => void;
@@ -15,8 +15,10 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ visible, onClose }) => {
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
+  const [subTaskModalVisible, setSubTaskModalVisible] = useState(false);
+  const [subTasks, setSubTasks] = useState<SubTask[]>([]); // State for sub-tasks
   const [progress, setProgress] = useState<'Not Started' | 'In Progress' | 'Completed'>('Not Started');
-
+ 
   const progressOptions = ['Not Started', 'In Progress', 'Completed'];
 
   const handleSave = () => {
@@ -32,6 +34,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ visible, onClose }) => {
       date: date || new Date().toISOString().split('T')[0], // Default to today
       time: time || '09:00',
       progress: progress,
+      subtasks: subTasks, // Include sub-tasks
     };
 
     addTask(newTask);
@@ -42,6 +45,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ visible, onClose }) => {
     setDate('');
     setTime('');
     setProgress('Not Started');
+    setSubTasks([]); // Clear sub-tasks
     
     onClose();
   };
@@ -53,8 +57,17 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ visible, onClose }) => {
     setDate('');
     setTime('');
     setProgress('Not Started');
+    setSubTasks([]); // Clear sub-tasks
     
     onClose();
+  };
+
+  const handleDeleteSubTask = (subTaskId: number) => {
+    setSubTasks(prevSubTasks => prevSubTasks.filter(subTask => subTask.id !== subTaskId));
+  };
+
+  const addSubTasks = (subTask: SubTask) => {
+    setSubTasks(prev => [...prev, subTask]);
   };
 
   return (
@@ -152,7 +165,41 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ visible, onClose }) => {
               </View>
             </View>
 
-            {/* Action Buttons */}
+            {/* Add subtask section */}
+            <View style={styles.header}>
+              <Text style={styles.modalTitle}>Add sub-tasks</Text>
+            </View>
+
+            {/* Section to create subtasks */}
+         
+            <View style={styles.subTaskRow}>
+              <AddSubTasks
+                subTasks={subTasks}
+                addSubTasks={addSubTasks}
+              />
+            </View>
+            {subTasks.length > 0 ? (
+              <View>
+                {subTasks.map((subTask) => (
+                  <View key={subTask.id} style={styles.subTaskRow}>
+                    <DisplaySubTaskComponent
+                      subTask={subTask}
+                    />
+                    <TouchableOpacity
+                      onPress={() => handleDeleteSubTask(subTask.id)}
+                      style={styles.deleteSubtaskButton}
+                    >
+                      <Ionicons name="trash" size={24} color="#666" />
+                    </TouchableOpacity>
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <View>
+                <Text>No Subtasks Available</Text>
+              </View>
+            )}
+              {/* Action Buttons */}
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
                 <Text style={styles.cancelButtonText}>Cancel</Text>
@@ -169,6 +216,19 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ visible, onClose }) => {
 };
 
 const styles = StyleSheet.create({
+  addSubtaskButton: {
+    marginLeft: 8,
+    padding: 2,
+  },
+  subTaskRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  deleteSubtaskButton: {
+    marginLeft: 8,
+    padding: 4,
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -176,12 +236,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 20,
-    width: '90%',
-    maxHeight: '80%',
-  },
+  backgroundColor: '#fff',
+  borderRadius: 20,
+  padding: 20,
+  width: '90%',
+  // Remove or comment out maxHeight: '80%',
+  maxHeight: '80%',
+  flex: 1, // Add this
+},
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',

@@ -1,10 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import React, { useState } from 'react';
-import { FlatList, Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import TaskModal from './taskmodal';
+import React from 'react';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useTask } from '../(context)/TaskContext';
-import { useNavigation } from '@react-navigation/native';
-
+import TaskModal from './taskmodal';
 
 function TaskList() {
   const { tasks, modalVisible, closeTaskModal, openTaskInMyTasks, openTaskModal } = useTask();

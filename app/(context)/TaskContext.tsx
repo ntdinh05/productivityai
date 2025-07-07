@@ -7,7 +7,9 @@ export interface Task {
   time: string;
   progress: 'Not Started' | 'In Progress' | 'Completed';
   description?: string;
+  subtasks?: SubTask[];
 }
+export type SubTask = Omit<Task, 'subtasks'>;
 
 interface TaskContextType {
   tasks: Task[];
@@ -46,7 +48,23 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       time: '14:00',
       date: '2025-07-07',
       progress: 'Not Started',
-      description: 'Add dark mode theme support to the application'
+      description: 'Add dark mode theme support to the application',
+      subtasks: [
+        {
+          id: 1,
+          title: 'Design dark mode UI',
+          date: '2025-07-07',
+          time: '14:00',
+          progress: 'Not Started',
+        },
+        {
+          id: 2,
+          title: 'Implement dark mode styles',
+          date: '2025-07-07',
+          time: '15:00',
+          progress: 'Not Started',
+        },
+      ]
     },
     {
       id: 4,
@@ -54,7 +72,22 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       time: '16:00',
       date: '2025-07-08',
       progress: 'In Progress',
-      description: 'Fix critical bugs reported in the issue tracker'
+      description: 'Fix critical bugs reported in the issue tracker',
+      subtasks: [
+        { id: 1,
+          title: 'Investigate login issue',
+          date: '2025-07-08',
+          time: '16:00',
+          progress: 'Not Started',
+        },
+        {
+          id: 2,
+          title: 'Fix UI glitches on home screen',
+          date: '2025-07-08',
+          time: '17:00',
+          progress: 'Not Started',
+        },
+      ]
     },
   ]);
   
