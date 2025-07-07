@@ -1,11 +1,11 @@
 import { useFocusEffect } from '@react-navigation/native';
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import AddTaskModal from '../(components)/addtaskmodal';
 import TaskList from '../(components)/tasklist';
 import TaskModal from '../(components)/taskmodal';
 import TodayTask from '../(components)/todaytask';
-import { useTask } from '../(context)/TaskContext';
 
 enum GOAL {
   daily = "Daily",
@@ -32,8 +32,7 @@ interface Task {
 }
 
 const MyTasks = () => {
-  // const { modalVisible, selectedTask } = useTask();
-  // const {task, openTaskInMyTasks} = useTask();
+  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
 
   // This will ensure the modal shows when navigating to this tab
   useFocusEffect(
@@ -42,6 +41,14 @@ const MyTasks = () => {
     }, [])
   );
 
+  const handleAddTask = () => {
+    setShowAddTaskModal(true);
+  };
+
+  const handleCloseAddTaskModal = () => {
+    setShowAddTaskModal(false);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.headerRow}>
@@ -49,12 +56,20 @@ const MyTasks = () => {
       </View>
       <TodayTask/>
       <TaskList/>
-      <TouchableOpacity style={styles.fab} onPress={() => { /* TODO: Add task logic */ }}>
+      
+      {/* FAB Button */}
+      <TouchableOpacity style={styles.fab} onPress={handleAddTask}>
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
       
-      {/* Task Modal - will show when modalVisible is true */}
+      {/* Task Detail Modal */}
       <TaskModal />
+      
+      {/* Add Task Modal */}
+      <AddTaskModal 
+        visible={showAddTaskModal} 
+        onClose={handleCloseAddTaskModal} 
+      />
     </SafeAreaView>
   )
 }

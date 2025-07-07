@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 2,
-    maxHeight: '80%',
+    maxHeight: '65%',
   },
   taskRow: {
     flexDirection: 'row',

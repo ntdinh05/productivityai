@@ -15,6 +15,7 @@ const TaskModal = () => {
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>{selectedTask?.title}</Text>
+          <Text style={styles.modalText}>Date: {selectedTask?.date}</Text>
           <Text style={styles.modalText}>Time: {selectedTask?.time}</Text>
           <Text style={styles.modalText}>Progress: {selectedTask?.progress}</Text>
           {selectedTask?.description && (
