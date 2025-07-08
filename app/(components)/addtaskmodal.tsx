@@ -60,7 +60,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ visible, onClose }) => {
   return (
     <Modal
       visible={visible}
-      animationType="slide"
+      animationType="fade"
       transparent={true}
       onRequestClose={handleCancel}
     >
