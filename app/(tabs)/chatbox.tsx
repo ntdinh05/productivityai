@@ -38,7 +38,7 @@ export default function Chatbox() {
       <View style={{ flex: 1 }}>
         {/* Header */}
         <View style={chatboxStyles.header}>
-        // How to point the back button to the dashboard tab???
+        {/* // How to point the back button to the dashboard tab??? */}
           <TouchableOpacity onPress={() => '../app/tabs/dashboard'}>
             <Ionicons name="chevron-back" size={hp('3%')} color="#4F704F" />
           </TouchableOpacity>

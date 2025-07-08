@@ -1,8 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Checkbox } from 'expo-checkbox';
-import React, { useState } from 'react';
-import { FlatList, StyleSheet, Text, Touchable, TouchableOpacity, View } from 'react-native';
-
+import React, { useEffect, useState } from 'react';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SubTask, useTask } from '../(context)/TaskContext';
 const dummyTasks = [
   {
     id: 1,
@@ -31,14 +30,39 @@ const dummyTasks = [
 ];
 
 function TodayTask() {
-  const [tasks, setTasks] = useState(dummyTasks);
+  const { tasks } = useTask();
+  const [currentSubTasks, setCurrentSubTasks] = useState<SubTask[]>([]);
+  useEffect(() => {
+    const getSubTasks = () => {
+      const todayDate = new Date();
+      const todayTasks = tasks.filter(task => {
+        const taskDate = new Date(task.date);
+        console.log(`Task Date: ${taskDate}, Today Date: ${todayDate}`);
+        return taskDate.getDate() === todayDate.getDate() &&
+              taskDate.getMonth() === todayDate.getMonth() &&
+              taskDate.getFullYear() === todayDate.getFullYear();
+      });
+      console.log(`Today's Tasks:`, todayTasks);
 
-  const toggleTask = (id: number) => {
-    setTasks(prev => prev.map(task =>
-      task.id === id ? { ...task, checked: !task.checked } : task
-    ));
+      const allSubTasks = todayTasks.flatMap(task => task.subtasks || []);
+      setCurrentSubTasks(allSubTasks);
+      console.log(`Today's SubTasks:`, allSubTasks);
+    }
+    getSubTasks();
+  }, []);
+  const toggleTask = (id: string | number) => {
+    setCurrentSubTasks(prev =>
+      prev.map(subTask =>
+        subTask.id === id
+          ? {
+              ...subTask,
+              progress: subTask.progress === 'Completed' ? 'Not Started' : 'Completed',
+            }
+          : subTask
+      )
+    );
   };
-
+  // Suggest: cái toggle task chỉ để mark là cái task đó completed hay chưa thôi, nên trong cái interface của subtask (trong TaskContext) thì m tạo 1 cái mục checked: true/false là được
   return (
     <View style={{ alignItems: 'center', width: '100%' }}>
       <View style={styles.card}>
@@ -47,17 +71,29 @@ function TodayTask() {
           <Text style={styles.summaryPercent}>20%</Text>
         </View>
         <FlatList
-          data={tasks}
+          data={currentSubTasks}
           renderItem={({ item }) => (
             <TouchableOpacity style={styles.taskRow} key={item.id}>
               <View style={styles.leftSection}>
-                <Checkbox
-                  value={item.checked}
-                  onValueChange={() => toggleTask(item.id)}
-                  color={item.checked ? '#2E5D3B' : '#B0B0B0'}
-                  style={styles.checkbox}
-                />
-                <Text style={[styles.taskTitle, item.checked && styles.taskTitleChecked]}>{item.title}</Text>
+                <TouchableOpacity onPress={() => toggleTask(item.id)}>
+                  <View style={[
+                    styles.checkbox,
+                    {
+                      backgroundColor: item.progress === 'Completed' ? '#4F704F' : 'transparent',
+                      borderColor: '#4F704F',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    },
+                  ]}>
+                    {item.progress === 'Completed' && (
+                      <Text style={{ color: '#fff', fontSize: 14, fontWeight: 'bold' }}>✓</Text>
+                    )}
+                  </View>
+                  <Text style={[
+                    styles.taskTitle,
+                    item.progress === 'Completed' && styles.taskTitleChecked,
+                  ]}>{item.title}</Text>  
+                </TouchableOpacity>              
               </View>
               <View style={styles.rightSection}>
                 <Text style={styles.time}>{item.time}</Text>

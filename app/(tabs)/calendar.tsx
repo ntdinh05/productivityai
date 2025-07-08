@@ -3,31 +3,21 @@ import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native
 import { Calendar } from 'react-native-calendars';
 import { heightPercentageToDP as hp, widthPercentageToDP as wp } from 'react-native-responsive-screen';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {useTask} from "@/app/(context)/TaskContext";
+import TaskModal from "@/app/(components)/taskmodal";
+import calendar from "@/styles/calendar";
 
 const App = () => {
   const [selected, setSelected] = useState('');
-  const [tasks, setTasks] = useState([
-    { id: '1', title: 'Complete React Native project before deadline', completed: true, time: '10:00 AM - 11:00 AM', date: '2025-06-27' },
-    { id: '2', title: 'Review code for pull request', completed: false, time: '11:00 AM - 12:00 PM', date: '2025-06-27' },
-    { id: '3', title: 'Attend team meeting', completed: false, time: '12:00 PM - 1:00 PM', date: '2025-06-28' },
-    { id: '4', title: 'Update documentation', completed: true, time: '1:00 PM - 2:00 PM', date: '2025-06-28' },
-    { id: '5', title: 'Plan next sprint', completed: false, time: '2:00 PM - 3:00 PM', date: '2025-06-29' },
-    { id: '6', title: 'Fix bugs', completed: false, time: '3:00 PM - 4:00 PM', date: '2025-06-29' },
-    { id: '7', title: 'Write tests', completed: false, time: '4:00 PM', date: '2025-06-29' },
-    { id: '8', title: 'Morning workout', completed: true, time: '7:00 AM - 8:00 AM', date: '2025-06-30' },
-    { id: '9', title: 'Client presentation', completed: false, time: '9:00 AM - 10:30 AM', date: '2025-06-30' },
-    { id: '10', title: 'Lunch with team', completed: false, time: '12:30 PM - 1:30 PM', date: '2025-06-30' },
-    { id: '11', title: 'API integration review', completed: false, time: '3:00 PM - 4:00 PM', date: '2025-06-30' },
-    { id: '12', title: 'Database optimization', completed: false, time: '9:00 AM - 11:00 AM', date: '2025-07-01' },
-    { id: '13', title: 'UI/UX design review', completed: true, time: '11:30 AM - 12:30 PM', date: '2025-07-01' },
-    { id: '14', title: 'Code refactoring', completed: false, time: '2:00 PM - 4:00 PM', date: '2025-07-01' },
-    { id: '15', title: 'Weekly standup', completed: false, time: '9:00 AM - 9:30 AM', date: '2025-07-02' },
-    { id: '16', title: 'Security audit', completed: false, time: '10:00 AM - 12:00 PM', date: '2025-07-02' },
-    { id: '17', title: 'Deploy to staging', completed: true, time: '2:00 PM - 3:00 PM', date: '2025-07-02' },
-    { id: '18', title: 'Performance testing', completed: false, time: '3:30 PM - 5:00 PM', date: '2025-07-02' },
-    { id: '19', title: 'Doctor appointment', completed: false, time: '10:00 AM - 11:00 AM', date: '2025-07-03' },
-    { id: '20', title: 'Grocery shopping', completed: false, time: '2:00 PM - 3:00 PM', date: '2025-07-03' },
-  ]);
+  const { tasks, openTaskModal } = useTask();
+  // const calendarTasks = tasks.map(task => ({
+  //     ...task,
+  //     date: '2025-07-07', // You can modify this to use actual dates from your tasks
+  //     completed: task.progress === 'Completed'
+  // }));
+  const handleTaskPress = (task) => {
+    openTaskModal(task);
+  }
   const filteredTasks = selected ? tasks.filter(task => task.date === selected) : tasks;
   return (
     <SafeAreaView style={styles.container}>
@@ -74,7 +64,7 @@ const App = () => {
             data={filteredTasks}
             keyExtractor={item => item.id}
             renderItem={({ item }) => (
-              <TouchableOpacity style={styles.eventBox}>
+              <TouchableOpacity style={styles.eventBox} onPress={() => handleTaskPress(item)}>
                 <View style={styles.eventContent}>
                   <Text style={styles.todoText} numberOfLines={1} ellipsizeMode="tail">{item.title}</Text>          
                   <View style={styles.timeContainer}>
@@ -95,6 +85,7 @@ const App = () => {
             }
           />
         </View>
+        <TaskModal/>
     </SafeAreaView>
   );
 }

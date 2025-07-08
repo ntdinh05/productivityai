@@ -15,7 +15,7 @@ const initialTasks = [
   { id: '7', title: 'Write tests', completed: false },
 ]
 
-const dashboard = () => {
+const Dashboard = () => {
   const [tasks, setTasks] = useState(initialTasks)
 
   const toggleTask = (id: string) => {
@@ -84,4 +84,7 @@ const dashboard = () => {
     </SafeAreaView>
   )
 }
+
+export default Dashboard
+
 const styles = dashboardStyles;
