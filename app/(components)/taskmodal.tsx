@@ -1,9 +1,16 @@
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Modal, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { useTask } from '../(context)/TaskContext';
 
 const TaskModal = () => {
-  const { selectedTask, modalVisible, closeTaskModal } = useTask();
+  const { selectedTask, modalVisible, closeTaskModal, openEditModal } = useTask();
+
+  const handleEdit = () => {
+    closeTaskModal();
+    openEditModal(selectedTask!);
+  };
 
   return (
     <Modal
@@ -14,19 +21,53 @@ const TaskModal = () => {
     >
       <View style={styles.modalOverlay}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>{selectedTask?.title}</Text>
-          <Text style={styles.modalText}>Date: {selectedTask?.date}</Text>
-          <Text style={styles.modalText}>Time: {selectedTask?.time}</Text>
-          <Text style={styles.modalText}>Progress: {selectedTask?.progress}</Text>
-          {selectedTask?.description && (
-            <Text style={styles.modalDescription}>{selectedTask.description}</Text>
+          {/* Header */}
+          <View style={styles.header}>
+            <Text style={styles.modalTitle}>{selectedTask?.title}</Text>
+            <TouchableOpacity onPress={closeTaskModal} style={styles.closeButton}>
+              <Ionicons name="close" size={24} color="#666" />
+            </TouchableOpacity>
+          </View>
+
+          {/* Main Task Info */}
+          <View style={styles.infoContainer}>
+            <Text style={styles.modalText}>Date: {selectedTask?.date}</Text>
+            <Text style={styles.modalText}>Time: {selectedTask?.time}</Text>
+            <Text style={styles.modalText}>Progress: {selectedTask?.progress}</Text>
+            {selectedTask?.description && (
+              <Text style={styles.modalDescription}>{selectedTask.description}</Text>
+            )}
+          </View>
+
+          {/* Subtasks */}
+          {selectedTask?.subtasks && selectedTask.subtasks.length > 0 && (
+            <View style={styles.subtasksSection}>
+              <Text style={styles.subtasksTitle}>Subtasks ({selectedTask.subtasks.length})</Text>
+              <ScrollView 
+                style={styles.subtasksScrollView}
+                showsVerticalScrollIndicator={true}
+                nestedScrollEnabled={true}
+              >
+                {selectedTask.subtasks.map((subtask, index) => (
+                  <View key={subtask.id} style={styles.subtaskItem}>
+                    <Text style={styles.subtaskTitle}>
+                      {index + 1}. {subtask.title}
+                    </Text>
+                    <Text style={styles.subtaskDetails}>
+                      {subtask.date} • {subtask.time} • {subtask.progress}
+                    </Text>
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
           )}
           
+          {/* Action Buttons */}
           <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.editButton}>
+            <TouchableOpacity style={styles.editButton} onPress={handleEdit}>
               <Text style={styles.editButtonText}>Edit</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.closeButton} onPress={closeTaskModal}>
+            <TouchableOpacity style={styles.closeButton2} onPress={closeTaskModal}>
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
           </View>
@@ -47,15 +88,26 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 18,
     padding: 24,
-    width: '85%',
+    width: '90%',
+    maxHeight: hp(70),
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    marginBottom: 20,
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '700',
     color: '#222',
-    marginBottom: 12,
-    textAlign: 'center',
+    flex: 1,
+  },
+  closeButton: {
+    padding: 5,
+  },
+  infoContainer: {
+    marginBottom: 20,
   },
   modalText: {
     fontSize: 16,
@@ -65,33 +117,68 @@ const styles = StyleSheet.create({
   modalDescription: {
     fontSize: 14,
     color: '#777',
-    marginBottom: 16,
-    textAlign: 'center',
     fontStyle: 'italic',
+    marginTop: 8,
+  },
+  subtasksSection: {
+    marginBottom: 20,
+    // Removed flex: 1 to prevent overflow
+  },
+  subtasksTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 12,
+  },
+  subtasksScrollView: {
+    maxHeight: hp(20), // Reduced max height to prevent overflow
+    borderRadius: 8,
+    backgroundColor: '#f9f9f9',
+    padding: 8,
+  },
+  subtaskItem: {
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 8,
+    borderLeftWidth: 3,
+    borderLeftColor: '#E9762B',
+  },
+  subtaskTitle: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#333',
+    marginBottom: 4,
+  },
+  subtaskDetails: {
+    fontSize: 12,
+    color: '#666',
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-    marginTop: 16,
+    justifyContent: 'space-between',
+    marginTop: 20,
   },
   editButton: {
+    flex: 1,
     backgroundColor: '#E9762B',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 12,
     borderRadius: 8,
-    marginRight: 10,
+    marginRight: 8,
+    alignItems: 'center',
   },
   editButtonText: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '700',
   },
-  closeButton: {
+  closeButton2: {
+    flex: 1,
     backgroundColor: '#2E5D3B',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 12,
     borderRadius: 8,
+    marginLeft: 8,
+    alignItems: 'center',
   },
   closeButtonText: {
     color: '#fff',

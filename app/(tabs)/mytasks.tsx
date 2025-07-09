@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AddTaskModal from '../(components)/addtaskmodal';
+import EditTaskModal from '../(components)/edittaskmodal';
 import TaskList from '../(components)/tasklist';
 import TaskModal from '../(components)/taskmodal';
 import TodayTask from '../(components)/todaytask';
@@ -64,6 +65,9 @@ const MyTasks = () => {
       
       {/* Task Detail Modal */}
       <TaskModal />
+      
+      {/* Edit Task Modal */}
+      <EditTaskModal />
       
       {/* Add Task Modal */}
       <AddTaskModal 
