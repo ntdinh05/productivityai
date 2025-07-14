@@ -2,55 +2,44 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SubTask, useTask } from '../(context)/TaskContext';
-const dummyTasks = [
-  {
-    id: 1,
-    title: 'Homework 331',
-    time: '18:00',
-    checked: true,
-  },
-  {
-    id: 2,
-    title: 'Homework',
-    time: '18:00',
-    checked: false,
-  },
-  {
-    id: 3,
-    title: 'Homework',
-    time: '18:00',
-    checked: false,
-  },
-  {
-    id: 4,
-    title: 'Homework',
-    time: '18:00',
-    checked: false,
-  },
-];
 
 function TodayTask() {
-  const { tasks } = useTask();
+  const { tasks, updateTask } = useTask();
   const [currentSubTasks, setCurrentSubTasks] = useState<SubTask[]>([]);
+  
   useEffect(() => {
     const getSubTasks = () => {
-      const todayDate = new Date();
+      const today = new Date();
+      const todayString = today.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+      
+      console.log('Today date:', todayString);
+      
+      // Filter tasks for today
       const todayTasks = tasks.filter(task => {
-        const taskDate = new Date(task.date);
-        console.log(`Task Date: ${taskDate}, Today Date: ${todayDate}`);
-        return taskDate.getDate() === todayDate.getDate() &&
-              taskDate.getMonth() === todayDate.getMonth() &&
-              taskDate.getFullYear() === todayDate.getFullYear();
+        console.log(`Comparing task date: ${task.date} with today: ${todayString}`);
+        return task.date === todayString;
       });
-      console.log(`Today's Tasks:`, todayTasks);
+      
+      console.log('Today\'s Tasks:', todayTasks);
 
-      const allSubTasks = todayTasks.flatMap(task => task.subtasks || []);
+      // Get all subtasks from today's tasks
+      const allSubTasks = todayTasks.flatMap(task => {
+        if (task.subtasks) {
+          // Also filter subtasks by today's date
+          return task.subtasks.filter(subtask => subtask.date === todayString);
+        }
+        return [];
+      });
+      
       setCurrentSubTasks(allSubTasks);
-      console.log(`Today's SubTasks:`, allSubTasks);
-    }
+      console.log('Today\'s SubTasks:', allSubTasks);
+    };
+    
     getSubTasks();
-  }, []);
+  }, [tasks]); // Add tasks as dependency so it updates when tasks change
+
   const toggleTask = (id: string | number) => {
+    // Update the subtask progress in the local state
     setCurrentSubTasks(prev =>
       prev.map(subTask =>
         subTask.id === id
@@ -61,51 +50,88 @@ function TodayTask() {
           : subTask
       )
     );
+
+    // Also update the main tasks context
+    const updatedTasks = tasks.map(task => {
+      if (task.subtasks) {
+        const updatedSubtasks = task.subtasks.map(subtask =>
+          subtask.id === id
+            ? {
+                ...subtask,
+                progress: subtask.progress === 'Completed' ? 'Not Started' : 'Completed',
+              }
+            : subtask
+        );
+        return { ...task, subtasks: updatedSubtasks };
+      }
+      return task;
+    });
+
+    // Update each task that was modified
+    updatedTasks.forEach(task => {
+      const originalTask = tasks.find(t => t.id === task.id);
+      if (originalTask && JSON.stringify(originalTask.subtasks) !== JSON.stringify(task.subtasks)) {
+        updateTask(task);
+      }
+    });
   };
-  // Suggest: cái toggle task chỉ để mark là cái task đó completed hay chưa thôi, nên trong cái interface của subtask (trong TaskContext) thì m tạo 1 cái mục checked: true/false là được
+
+  // Calculate completion percentage
+  const completedCount = currentSubTasks.filter(task => task.progress === 'Completed').length;
+  const totalCount = currentSubTasks.length;
+  const completionPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
   return (
     <View style={{ alignItems: 'center', width: '100%' }}>
       <View style={styles.card}>
         <View style={styles.summaryRow}>
           <Text style={styles.summaryTitle}>Today</Text>
-          <Text style={styles.summaryPercent}>20%</Text>
+          <Text style={styles.summaryPercent}>{completionPercent}%</Text>
         </View>
-        <FlatList
-          data={currentSubTasks}
-          renderItem={({ item }) => (
-            <TouchableOpacity style={styles.taskRow} key={item.id}>
-              <View style={styles.leftSection}>
-                <TouchableOpacity onPress={() => toggleTask(item.id)}>
-                  <View style={[
-                    styles.checkbox,
-                    {
-                      backgroundColor: item.progress === 'Completed' ? '#4F704F' : 'transparent',
-                      borderColor: '#4F704F',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    },
-                  ]}>
-                    {item.progress === 'Completed' && (
-                      <Text style={{ color: '#fff', fontSize: 14, fontWeight: 'bold' }}>✓</Text>
-                    )}
-                  </View>
+        {currentSubTasks.length > 0 ? (
+          <FlatList
+            data={currentSubTasks}
+            renderItem={({ item }) => (
+              <TouchableOpacity style={styles.taskRow} key={item.id}>
+                <View style={styles.leftSection}>
+                  <TouchableOpacity onPress={() => toggleTask(item.id)}>
+                    <View style={[
+                      styles.checkbox,
+                      {
+                        backgroundColor: item.progress === 'Completed' ? '#4F704F' : 'transparent',
+                        borderColor: '#4F704F',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      },
+                    ]}>
+                      {item.progress === 'Completed' && (
+                        <Text style={{ color: '#fff', fontSize: 14, fontWeight: 'bold' }}>✓</Text>
+                      )}
+                    </View>
+                  </TouchableOpacity>
                   <Text style={[
                     styles.taskTitle,
                     item.progress === 'Completed' && styles.taskTitleChecked,
-                  ]}>{item.title}</Text>  
-                </TouchableOpacity>              
-              </View>
-              <View style={styles.rightSection}>
-                <Text style={styles.time}>{item.time}</Text>
-                <Ionicons name="alarm" size={18} color="#222" style={{ marginLeft: 6 }} />
-              </View>
-            </TouchableOpacity>
-          )}
-        />
+                  ]}>{item.title}</Text>
+                </View>
+                <View style={styles.rightSection}>
+                  <Text style={styles.time}>{item.time}</Text>
+                  <Ionicons name="alarm" size={18} color="#222" style={{ marginLeft: 6 }} />
+                </View>
+              </TouchableOpacity>
+            )}
+            keyExtractor={(item) => item.id.toString()}
+          />
+        ) : (
+          <View style={styles.noTasksContainer}>
+            <Text style={styles.noTasksText}>No subtasks for today</Text>
+          </View>
+        )}
       </View>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
@@ -142,6 +168,7 @@ const styles = StyleSheet.create({
     width: 22,
     height: 22,
     borderRadius: 11,
+    borderWidth: 2,
   },
   taskTitle: {
     fontSize: 16,
@@ -151,6 +178,7 @@ const styles = StyleSheet.create({
   taskTitleChecked: {
     fontWeight: '700',
     color: '#2E5D3B',
+    textDecorationLine: 'line-through',
   },
   rightSection: {
     flexDirection: 'row',
@@ -162,11 +190,10 @@ const styles = StyleSheet.create({
     color: '#222',
     fontWeight: '500',
   },
-    summaryRow: {
+  summaryRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    // backgroundColor: '#fff',
     paddingVertical: 16,
     paddingHorizontal: 24,
     marginBottom: 10,
@@ -190,7 +217,15 @@ const styles = StyleSheet.create({
     textAlign: 'right',
     flex: 1,
   },
-
+  noTasksContainer: {
+    paddingVertical: 20,
+    alignItems: 'center',
+  },
+  noTasksText: {
+    fontSize: 16,
+    color: '#666',
+    fontStyle: 'italic',
+  },
 });
 
 export default TodayTask;
