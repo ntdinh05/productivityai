@@ -27,14 +27,10 @@ function TaskList() {
                 <Text style={styles.taskTitle}>{item.title}</Text>
                 <Text
                   style={
-                    item.progress === 'Not Started'
-                      ? styles.notstartedStatus
-                      : item.progress === 'In Progress'
-                      ? styles.inprogressStatus
-                      : styles.completedStatus
+                    item.is_completed ? styles.completedStatus : styles.inprogressStatus
                   }
                 >
-                  {item.progress}
+                  {item.is_completed ? 'Completed' : 'In Progress'}
                 </Text>
               </View>
               <View style={styles.rightSection}>
