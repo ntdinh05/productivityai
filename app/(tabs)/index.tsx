@@ -1,10 +1,8 @@
-import { supabase } from '@/lib/supabase';
-import { Session } from '@supabase/supabase-js';
-import { Link } from 'expo-router';
+import { taskService } from '@/utils/taskservice';
 import { Ionicons } from "@expo/vector-icons";
 
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, TextInput, ScrollView, Switch } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Image, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
 import profileStyles from '../../styles/profile'; // Adjust the import path as necessary
@@ -19,6 +17,9 @@ export default function Profile() {
   });
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+
+  const [tasks, setTasks] = useState([]);
+  
 
   if (editMode) {
     // Editable Profile Form

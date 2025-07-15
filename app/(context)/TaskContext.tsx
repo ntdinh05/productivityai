@@ -2,25 +2,45 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { taskService } from '@/utils/taskservice';
 
 export interface Task {
-  id: number;
+  id: string;
   title: string;
-  date: string;
+  due_date: string;
   time: string;
-  progress: 'Not Started' | 'In Progress' | 'Completed';
+  is_completed: boolean;
   description?: string;
+  user_id?: string;
+  created_at?: string;
+  updated_at?: string;
   subtasks?: SubTask[];
 }
-export type SubTask = Omit<Task, 'subtasks'>;
+export interface SubTask {
+  id: string;
+  title: string;
+  due_date: string;
+  time: string;
+  is_completed: boolean;
+  description?: string;
+  user_id?: string;
+  created_at?: string;
+  updated_at?: string;
+  parent: string;
+}
 
 interface TaskContextType {
-  //Declare the context type
+  tasks: Task[];
   selectedTask: Task | null;
   modalVisible: boolean;
   editModalVisible: boolean;
+  loading: boolean;
+  error: string | null;
   setTasks: (tasks: Task[]) => void;
-  addTask: (task: Task) => void;
-  updateTask: (updatedTask: Task) => void;
-  deleteTask: (taskId: number) => void;
+  addTask: (task: Omit<Task, 'id'>) => Promise<void>;
+  updateTask: (updatedTask: Task) => Promise<void>;
+  deleteTask: (taskId: string) => Promise<void>;
+  refreshTasks: () => Promise<void>;
+  refreshSubTasks: () => Promise<void>;
+  setSubTasks: (subtasks: SubTask[]) => void;
+  subtasks: SubTask[];
   openTaskModal: (task: Task) => void;
   closeTaskModal: () => void;
   openEditModal: (task: Task) => void;
@@ -31,45 +51,114 @@ interface TaskContextType {
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
 export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Understand state mechanism
   const [tasks, setTasks] = useState<Task[]>([]);
-  
+  const [subtasks, setSubTasks] = useState<SubTask[]>([]);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    taskService.getTasks()
-      .then(setTasks)
-      .catch(err => console.error('Failed to fetch tasks:', err));
+    refreshTasks();
+    refreshSubTasks();
   }, []);
+
+  const refreshTasks = async () => {
+    try {
+      setError(null);
+      setLoading(true);
+      const fetchedTasks = await taskService.getTasks();
+      setTasks(fetchedTasks);
+    } catch (err) {
+      console.error('Error fetching tasks:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch tasks');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const refreshSubTasks = async () => {
+    try {
+      setError(null);
+      setLoading(true);
+      const fetchedSubTasks = await taskService.getSubTasks();
+      setSubTasks(fetchedSubTasks);
+      groupSubtasksWithTasks(fetchedSubTasks);
+    } catch (err) {
+      console.error('Error fetching subtasks:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch subtasks');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const groupSubtasksWithTasks = (fetchedSubtasks: SubTask[]) => {
+    setTasks(prevTasks =>
+      prevTasks.map(task => ({
+        ...task,
+        subtasks: fetchedSubtasks.filter(subtask => subtask.parent === task.id)
+      }))
+    );
+  };
 
   const addTask = async (task: Omit<Task, 'id'>) => {
     try {
+      setLoading(true);
+      setError(null);
       const newTask = await taskService.createTask(task);
-      setTasks(prev => [newTask, ...prev]);
+      setTasks(prevTasks => [newTask, ...prevTasks]);
     } catch (err) {
-      console.error('Failed to add task:', err);
+      console.error('Error adding task:', err);
+      setError(err instanceof Error ? err.message : 'Failed to add task');
+      // Fallback to local state if database fails
+      const localTask = {
+        ...task,
+        id: Date.now().toString(),
+      };
+      setTasks(prevTasks => [localTask, ...prevTasks]);
+    } finally {
+      setLoading(false);
     }
   };
 
   const updateTask = async (updatedTask: Task) => {
     try {
-      const newTask = await taskService.updateTask(updatedTask);
-      setTasks(prev =>
-        prev.map(task => (task.id === newTask.id ? newTask : task))
+      setLoading(true);
+      setError(null);
+      await taskService.updateTask(updatedTask);
+      setTasks(prevTasks =>
+        prevTasks.map(task =>
+          task.id === updatedTask.id ? updatedTask : task
+        )
       );
     } catch (err) {
-      console.error('Failed to update task:', err);
+      console.error('Error updating task:', err);
+      setError(err instanceof Error ? err.message : 'Failed to update task');
+      // Fallback to local state if database fails
+      setTasks(prevTasks =>
+        prevTasks.map(task =>
+          task.id === updatedTask.id ? updatedTask : task
+        )
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
-  const deleteTask = async (taskId: number) => {
+  const deleteTask = async (taskId: string) => {
     try {
+      setLoading(true);
+      setError(null);
       await taskService.deleteTask(taskId);
-      setTasks(prev => prev.filter(task => task.id !== taskId));
+      setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
     } catch (err) {
-      console.error('Failed to delete task:', err);
+      console.error('Error deleting task:', err);
+      setError(err instanceof Error ? err.message : 'Failed to delete task');
+      // Fallback to local state if database fails
+      setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,10 +194,16 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       selectedTask,
       modalVisible,
       editModalVisible,
+      loading,
+      error,
       setTasks,
       addTask,
       updateTask,
       deleteTask,
+      refreshTasks,
+      refreshSubTasks,
+      setSubTasks,
+      subtasks,
       openTaskModal,
       closeTaskModal,
       openEditModal,

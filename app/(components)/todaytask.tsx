@@ -10,55 +10,46 @@ function TodayTask() {
   useEffect(() => {
     const getSubTasks = () => {
       const today = new Date();
-      const todayString = today.toISOString().split('T')[0]; // Format: YYYY-MM-DD
+      const todayString = today.toISOString().split('T')[0];
       
       console.log('Today date:', todayString);
       
-      // Filter tasks for today
-      const todayTasks = tasks.filter(task => {
-        console.log(`Comparing task date: ${task.date} with today: ${todayString}`);
-        return task.date === todayString;
-      });
-      
-      console.log('Today\'s Tasks:', todayTasks);
-
-      // Get all subtasks from today's tasks
-      const allSubTasks = todayTasks.flatMap(task => {
+      // Get all subtasks from all tasks that are due today
+      const todaySubTasks = tasks.flatMap(task => {
         if (task.subtasks) {
-          // Also filter subtasks by today's date
-          return task.subtasks.filter(subtask => subtask.date === todayString);
+          return task.subtasks.filter(subtask => subtask.due_date === todayString);
         }
         return [];
       });
       
-      setCurrentSubTasks(allSubTasks);
-      console.log('Today\'s SubTasks:', allSubTasks);
+      setCurrentSubTasks(todaySubTasks);
+      console.log('Today\'s SubTasks:', todaySubTasks);
     };
     
     getSubTasks();
-  }, [tasks]); // Add tasks as dependency so it updates when tasks change
+  }, [tasks]);
 
-  const toggleTask = (id: string | number) => {
-    // Update the subtask progress in the local state
+  const toggleTask = async (subtaskId: string) => {
+    // Update the subtask in the local state
     setCurrentSubTasks(prev =>
       prev.map(subTask =>
-        subTask.id === id
+        subTask.id === subtaskId
           ? {
               ...subTask,
-              progress: subTask.progress === 'Completed' ? 'Not Started' : 'Completed',
+              is_completed: !subTask.is_completed,
             }
           : subTask
       )
     );
 
-    // Also update the main tasks context
+    // Update the main tasks context
     const updatedTasks = tasks.map(task => {
       if (task.subtasks) {
         const updatedSubtasks = task.subtasks.map(subtask =>
-          subtask.id === id
+          subtask.id === subtaskId
             ? {
                 ...subtask,
-                progress: subtask.progress === 'Completed' ? 'Not Started' : 'Completed',
+                is_completed: !subtask.is_completed,
               }
             : subtask
         );
@@ -68,16 +59,16 @@ function TodayTask() {
     });
 
     // Update each task that was modified
-    updatedTasks.forEach(task => {
+    for (const task of updatedTasks) {
       const originalTask = tasks.find(t => t.id === task.id);
       if (originalTask && JSON.stringify(originalTask.subtasks) !== JSON.stringify(task.subtasks)) {
-        updateTask(task);
+        await updateTask(task);
       }
-    });
+    }
   };
 
   // Calculate completion percentage
-  const completedCount = currentSubTasks.filter(task => task.progress === 'Completed').length;
+  const completedCount = currentSubTasks.filter(task => task.is_completed).length;
   const totalCount = currentSubTasks.length;
   const completionPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
@@ -98,20 +89,20 @@ function TodayTask() {
                     <View style={[
                       styles.checkbox,
                       {
-                        backgroundColor: item.progress === 'Completed' ? '#4F704F' : 'transparent',
+                        backgroundColor: item.is_completed ? '#4F704F' : 'transparent',
                         borderColor: '#4F704F',
                         justifyContent: 'center',
                         alignItems: 'center',
                       },
                     ]}>
-                      {item.progress === 'Completed' && (
+                      {item.is_completed && (
                         <Text style={{ color: '#fff', fontSize: 14, fontWeight: 'bold' }}>✓</Text>
                       )}
                     </View>
                   </TouchableOpacity>
                   <Text style={[
                     styles.taskTitle,
-                    item.progress === 'Completed' && styles.taskTitleChecked,
+                    item.is_completed && styles.taskTitleChecked,
                   ]}>{item.title}</Text>
                 </View>
                 <View style={styles.rightSection}>
