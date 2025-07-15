@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { taskService } from '@/utils/taskservice';
 
 export interface Task {
   id: number;
@@ -12,7 +13,7 @@ export interface Task {
 export type SubTask = Omit<Task, 'subtasks'>;
 
 interface TaskContextType {
-  tasks: Task[];
+  //Declare the context type
   selectedTask: Task | null;
   modalVisible: boolean;
   editModalVisible: boolean;
@@ -30,90 +31,46 @@ interface TaskContextType {
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
 
 export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: 1,
-      title: 'Productivity AI Project',
-      time: '18:00',
-      date: '2025-07-05',
-      progress: 'In Progress',
-      description: 'Complete the main features of the productivity AI application'
-    },
-    {
-      id: 2,
-      title: 'Apply responsive design for the App',
-      time: '10:00',
-      date: '2025-07-06',
-      progress: 'Not Started',
-      description: 'Make the app responsive across different screen sizes'
-    },
-    {
-      id: 3,
-      title: 'Implement dark mode',
-      time: '14:00',
-      date: '2025-07-07',
-      progress: 'Not Started',
-      description: 'Add dark mode theme support to the application',
-      subtasks: [
-        {
-          id: 1,
-          title: 'Design dark mode UI',
-          date: '2025-07-07',
-          time: '14:00',
-          progress: 'Not Started',
-        },
-        {
-          id: 2,
-          title: 'Implement dark mode styles',
-          date: '2025-07-07',
-          time: '15:00',
-          progress: 'Not Started',
-        },
-      ]
-    },
-    {
-      id: 4,
-      title: 'Fix bugs',
-      time: '16:00',
-      date: '2025-07-08',
-      progress: 'In Progress',
-      description: 'Fix critical bugs reported in the issue tracker',
-      subtasks: [
-        { id: 1,
-          title: 'Investigate login issue',
-          date: '2025-07-08',
-          time: '16:00',
-          progress: 'Not Started',
-        },
-        {
-          id: 2,
-          title: 'Fix UI glitches on home screen',
-          date: '2025-07-08',
-          time: '17:00',
-          progress: 'Not Started',
-        },
-      ]
-    },
-  ]);
+  // Understand state mechanism
+  const [tasks, setTasks] = useState<Task[]>([]);
   
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [editModalVisible, setEditModalVisible] = useState(false);
 
-  const addTask = (task: Task) => {
-    setTasks(prevTasks => [...prevTasks, task]);
+  useEffect(() => {
+    taskService.getTasks()
+      .then(setTasks)
+      .catch(err => console.error('Failed to fetch tasks:', err));
+  }, []);
+
+  const addTask = async (task: Omit<Task, 'id'>) => {
+    try {
+      const newTask = await taskService.createTask(task);
+      setTasks(prev => [newTask, ...prev]);
+    } catch (err) {
+      console.error('Failed to add task:', err);
+    }
   };
 
-  const updateTask = (updatedTask: Task) => {
-    setTasks(prevTasks => 
-      prevTasks.map(task => 
-        task.id === updatedTask.id ? updatedTask : task
-      )
-    );
+  const updateTask = async (updatedTask: Task) => {
+    try {
+      const newTask = await taskService.updateTask(updatedTask);
+      setTasks(prev =>
+        prev.map(task => (task.id === newTask.id ? newTask : task))
+      );
+    } catch (err) {
+      console.error('Failed to update task:', err);
+    }
   };
 
-  const deleteTask = (taskId: number) => {
-    setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+  const deleteTask = async (taskId: number) => {
+    try {
+      await taskService.deleteTask(taskId);
+      setTasks(prev => prev.filter(task => task.id !== taskId));
+    } catch (err) {
+      console.error('Failed to delete task:', err);
+    }
   };
 
   const openTaskModal = (task: Task) => {
