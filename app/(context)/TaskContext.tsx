@@ -94,33 +94,38 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const groupSubtasksWithTasks = (fetchedSubtasks: SubTask[]) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task => ({
+  setTasks(prevTasks =>
+    prevTasks.map(task => {
+      // Only add subtasks if Task type allows it
+      return {
         ...task,
         subtasks: fetchedSubtasks.filter(subtask => subtask.parent === task.id)
-      }))
-    );
-  };
+      };
+    })
+  );
+};
 
   const addTask = async (task: Omit<Task, 'id'>) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const newTask = await taskService.createTask(task);
-      setTasks(prevTasks => [newTask, ...prevTasks]);
-    } catch (err) {
-      console.error('Error adding task:', err);
-      setError(err instanceof Error ? err.message : 'Failed to add task');
-      // Fallback to local state if database fails
-      const localTask = {
-        ...task,
-        id: Date.now().toString(),
-      };
-      setTasks(prevTasks => [localTask, ...prevTasks]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
+    setError(null);
+    const newTask = await taskService.createTask(task);
+    setTasks(prevTasks => [newTask, ...prevTasks]);
+  } catch (err) {
+    console.error('Error adding task:', err);
+    setError(err instanceof Error ? err.message : 'Failed to add task');
+    // Fallback to local state if database fails
+    const localTask: Task = {
+      ...task,
+      id: Date.now().toString(),
+      is_completed: false,
+      subtasks: task.subtasks ?? [],
+    };
+    setTasks(prevTasks => [localTask, ...prevTasks]);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const updateTask = async (updatedTask: Task) => {
     try {

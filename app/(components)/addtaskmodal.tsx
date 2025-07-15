@@ -28,13 +28,14 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ visible, onClose }) => {
     }
 
     const newTask = {
-      id: Date.now(), // Simple ID generation
       title: title.trim(),
       description: description.trim(),
       date: date || new Date().toISOString().split('T')[0], // Default to today
       time: time || '09:00',
       progress: progress,
       subtasks: subTasks, // Include sub-tasks
+      due_date: date, // Or use a different logic if needed
+      is_completed: progress === 'Completed',
     };
 
     addTask(newTask);
@@ -62,7 +63,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ visible, onClose }) => {
     onClose();
   };
 
-  const handleDeleteSubTask = (subTaskId: number) => {
+  const handleDeleteSubTask = (subTaskId: string) => {
     setSubTasks(prevSubTasks => prevSubTasks.filter(subTask => subTask.id !== subTaskId));
   };
 

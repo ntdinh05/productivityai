@@ -100,12 +100,13 @@ function addsubtaskcomponent({ subTasks, addSubTasks }: SubTaskComponentProps) {
               return;
             }
             addSubTasks({
-              id: Date.now() + Math.random(),
+              id: (Date.now() + Math.random()).toString(),
               title: title.trim(),
               description: description.trim(),
-              date,
-              time,
-              progress,
+              due_date: date,
+              time: time,
+              is_completed: progress === 'Completed', // boolean based on progress
+              parent: '', // Set this to the parent task id if you have it, otherwise leave as ''
             });
             setTitle('');
             setDescription('');
