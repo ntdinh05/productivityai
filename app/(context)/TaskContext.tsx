@@ -110,7 +110,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     setError(null);
     const newTask = await taskService.createTask(task);
-    setTasks(prevTasks => [newTask, ...prevTasks]);
+    setTasks(prevTasks => [...prevTasks, newTask]);
   } catch (err) {
     console.error('Error adding task:', err);
     setError(err instanceof Error ? err.message : 'Failed to add task');
