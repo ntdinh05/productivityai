@@ -1,4 +1,4 @@
-import { taskService } from '@/utils/taskservice';
+import  {TaskAPI}  from '@backend/api/taskApi';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 export interface Task {

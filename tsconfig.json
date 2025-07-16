@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "backend/server/server.js"  ]
+, "backend/server/server.js", "backend/api/taskservice.js"  ]
 }
