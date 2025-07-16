@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
 import { taskService } from '@/utils/taskservice';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 export interface Task {
   id: string;
@@ -110,18 +110,19 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     setError(null);
     const newTask = await taskService.createTask(task);
-    setTasks(prevTasks => [...prevTasks, newTask]);
+    setTasks(prevTasks => [newTask, ...prevTasks]);
   } catch (err) {
     console.error('Error adding task:', err);
     setError(err instanceof Error ? err.message : 'Failed to add task');
-    // Fallback to local state if database fails
-    const localTask: Task = {
-      ...task,
-      id: Date.now().toString(),
-      is_completed: false,
-      subtasks: task.subtasks ?? [],
-    };
-    setTasks(prevTasks => [localTask, ...prevTasks]);
+    
+    // // Fallback to local state if database fails
+    // const localTask: Task = {
+    //   ...task,
+    //   id: Date.now().toString(),
+    //   is_completed: false,
+    //   subtasks: task.subtasks ?? [],
+    // };
+    // setTasks(prevTasks => [localTask, ...prevTasks]);
   } finally {
     setLoading(false);
   }
