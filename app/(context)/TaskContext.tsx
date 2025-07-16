@@ -1,5 +1,5 @@
-import TaskAPI from '../../backend/api/taskApi';
 import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
+import TaskAPI from '../../backend/api/taskservice';
 
 export interface Task {
   id: string;
@@ -65,8 +65,8 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setError(null);
       setLoading(true);
       console.log('Fetching tasks via TaskAPI');
-      const fetchedTasks = await TaskAPI.getAllTasks();
-      console.log('Tasks fetched successfully');
+      const fetchedTasks = await TaskAPI.getAllTasks(); // Remove the endpoint parameter
+      console.log('Tasks fetched successfully:', fetchedTasks);
       setTasks(fetchedTasks);
     } catch (err) {
       console.error('Error fetching tasks:', err);
@@ -82,8 +82,8 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setError(null);
       setLoading(true);
       console.log('Fetching subtasks via TaskAPI');
-      const fetchedSubTasks = await TaskAPI.getAllSubTasks();
-      console.log('Subtasks fetched successfully');
+      const fetchedSubTasks = await TaskAPI.getAllSubTasks(); // Use the dedicated method
+      console.log('Subtasks fetched successfully:', fetchedSubTasks);
       setSubTasks(fetchedSubTasks);
       groupSubtasksWithTasks(fetchedSubTasks);
     } catch (err) {

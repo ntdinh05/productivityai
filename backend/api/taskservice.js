@@ -4,6 +4,7 @@ class TaskAPI {
     constructor() {
         this.baseURL = API_BASE_URL;
     }
+
     async makeRequest(endpoint, options = {}) {
         try {
             const url = `${this.baseURL}${endpoint}`;
@@ -13,8 +14,8 @@ class TaskAPI {
                     ...options.headers,
                 },
                 ...options,
-            }
-            console.log(`Making request to ${url} with options:`, config);
+            };
+            console.log(`Making request to ${url}`);
             const response = await fetch(url, config);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -27,23 +28,36 @@ class TaskAPI {
             throw error;
         }
     }
-    async getAllTasks(endpoint) {
-        return this.makeRequest(endpoint);
+
+    // Get all tasks
+    async getAllTasks() {
+        return this.makeRequest('/tasks');
     }
-    async createTask(taskData, endpoint) {
-        return this.makeRequest(endpoint, {
+
+    // Get all subtasks - Add this method
+    async getAllSubTasks() {
+        return this.makeRequest('/subtasks');
+    }
+
+    // Create task
+    async createTask(taskData) {
+        return this.makeRequest('/tasks', {
             method: 'POST',
             body: JSON.stringify(taskData),
         });
     }
-    async updateTask(taskId, taskData, endpoint) {
-        return this.makeRequest(`${endpoint}/${taskId}`, {
+
+    // Update task
+    async updateTask(taskId, taskData) {
+        return this.makeRequest(`/tasks/${taskId}`, {
             method: 'PUT',
             body: JSON.stringify(taskData),
         });
     }
-    async deleteTask(taskId, endpoint) {
-        return this.makeRequest(`${endpoint}/${taskId}`, {
+
+    // Delete task
+    async deleteTask(taskId) {
+        return this.makeRequest(`/tasks/${taskId}`, {
             method: 'DELETE',
         });
     }
