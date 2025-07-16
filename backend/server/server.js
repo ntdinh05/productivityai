@@ -140,7 +140,7 @@ app.post("/subtasks", async (request, response) => {
 });
 
 // PUT update subtask
-app.put("/subtasks/:id", async (request, response)) => {
+app.put("/subtasks/:id", async (request, response) => {
   try {
     const { id } = request.params;
     const { title, description, due_date, time, is_completed } = request.body;
@@ -156,7 +156,7 @@ app.put("/subtasks/:id", async (request, response)) => {
     console.error("Error updating subtask:", error);
     response.status(500).json({ error: "Failed to update subtask" });
   }
-}
+});
 
 // DELETE task
 app.delete("/subtasks/:id", async (request, response) => {
@@ -179,12 +179,8 @@ app.delete("/subtasks/:id", async (request, response) => {
 
 const PORT = process.env.PORT || 3000;
 
-
-
-
-
-app.listen(process.env.PORT, () =>
+app.listen(PORT, () =>
   console.log(
-    new Date().toLocaleTimeString() + `: Server is running on port ${process.env.PORT}...`
+    new Date().toLocaleTimeString() + `: Server is running on port ${PORT}...`
   )
 );
