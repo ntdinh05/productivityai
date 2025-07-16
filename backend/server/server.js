@@ -42,7 +42,7 @@ app.post("/tasks", async (request, response) => {
     const { data, error } = await supabase
       .from("tasks")
       .insert([{ title, description, due_date, time, is_completed: false }])
-      .select()
+      .select("*")
       .single();
     if (error) throw error;
     response.status(201).json(data);
@@ -62,7 +62,7 @@ app.put("/tasks/:id", async (request, response) => {
       .from("tasks")
       .update({ title, description, due_date, time, is_completed })
       .eq("id", id)
-      .select()
+      .select("*")
       .single();
 
     if (error) throw error;
@@ -123,7 +123,7 @@ app.post("/subtasks", async (request, response) => {
     const { data, error } = await supabase
       .from("subtasks")
       .insert([{ title, description, due_date, time, is_completed, parent }])
-      .select()
+      .select("*")
       .single();
     
     if (error) throw error;
@@ -143,7 +143,7 @@ app.put("/subtasks/:id", async (request, response) => {
       .from("subtasks")
       .update({ title, description, due_date, time, is_completed })
       .eq("id", id)
-      .select()
+      .select("*")
       .single();
     if (error) throw error;
     response.json(data);
