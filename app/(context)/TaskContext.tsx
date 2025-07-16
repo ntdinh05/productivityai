@@ -65,8 +65,8 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setError(null);
       setLoading(true);
       console.log('Fetching tasks via TaskAPI');
-      const fetchedTasks = await TaskAPI.getAllTasks(); // Remove the endpoint parameter
-      console.log('Tasks fetched successfully:', fetchedTasks);
+      const fetchedTasks = await TaskAPI.getAllTasks();
+      console.log('Tasks fetched successfully:', fetchedTasks.length, 'tasks');
       setTasks(fetchedTasks);
     } catch (err) {
       console.error('Error fetching tasks:', err);
@@ -82,10 +82,14 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setError(null);
       setLoading(true);
       console.log('Fetching subtasks via TaskAPI');
-      const fetchedSubTasks = await TaskAPI.getAllSubTasks(); // Use the dedicated method
-      console.log('Subtasks fetched successfully:', fetchedSubTasks);
+      const fetchedSubTasks = await TaskAPI.getAllSubTasks();
+      console.log('Subtasks fetched successfully:', fetchedSubTasks.length, 'subtasks');
       setSubTasks(fetchedSubTasks);
-      groupSubtasksWithTasks(fetchedSubTasks);
+      
+      // Group subtasks with tasks after both are loaded
+      if (fetchedSubTasks.length > 0) {
+        groupSubtasksWithTasks(fetchedSubTasks);
+      }
     } catch (err) {
       console.error('Error fetching subtasks:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch subtasks');
@@ -95,12 +99,15 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const groupSubtasksWithTasks = useCallback((fetchedSubtasks: SubTask[]) => {
-    setTasks(prevTasks =>
-      prevTasks.map(task => ({
+    console.log('Grouping subtasks with tasks:', fetchedSubtasks.length, 'subtasks');
+    setTasks(prevTasks => {
+      const updatedTasks = prevTasks.map(task => ({
         ...task,
         subtasks: fetchedSubtasks.filter(subtask => subtask.parent === task.id)
-      }))
-    );
+      }));
+      console.log('Updated tasks with subtasks:', updatedTasks);
+      return updatedTasks;
+    });
   }, []);
 
   const addTask = useCallback(async (task: Omit<Task, 'id'>) => {
@@ -135,6 +142,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setError(null);
       console.log('Updating task via TaskAPI');
       await TaskAPI.updateTask(updatedTask.id, updatedTask);
+      await TaskAPI.updateSubTask(updatedTask.subtasks || []);
       console.log('Task updated successfully');
       
       setTasks(prevTasks =>
@@ -203,9 +211,13 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     navigation.navigate('mytasks');
   }, []);
 
+  // Update the useEffect to ensure proper sequencing
   useEffect(() => {
-    refreshTasks();
-    refreshSubTasks();
+    const loadData = async () => {
+      await refreshTasks();
+      await refreshSubTasks();
+    };
+    loadData();
   }, [refreshTasks, refreshSubTasks]);
 
   return (

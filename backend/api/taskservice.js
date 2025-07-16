@@ -47,6 +47,13 @@ class TaskAPI {
         });
     }
 
+    async createSubTask(subTaskData) {
+        return this.makeRequest('/subtasks', {
+            method: 'POST',
+            body: JSON.stringify(subTaskData),
+        });
+    }
+
     // Update task
     async updateTask(taskId, taskData) {
         return this.makeRequest(`/tasks/${taskId}`, {
@@ -55,9 +62,22 @@ class TaskAPI {
         });
     }
 
+    async updateSubTask(subTaskId, subTaskData) {
+        return this.makeRequest(`/subtasks/${subTaskId}`, {
+            method: 'PUT',
+            body: JSON.stringify(subTaskData),
+        });
+    }
+
     // Delete task
     async deleteTask(taskId) {
         return this.makeRequest(`/tasks/${taskId}`, {
+            method: 'DELETE',
+        });
+    }
+    
+    async deleteSubTask(subTaskId) {
+        return this.makeRequest(`/subtasks/${subTaskId}`, {
             method: 'DELETE',
         });
     }
