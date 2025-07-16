@@ -8,7 +8,6 @@ export const taskService = {
       const { data, error } = await supabase
         .from('tasks')
         .select('*')
-
       if (error) {
         throw error;
       }
@@ -40,13 +39,12 @@ export const taskService = {
       const { data,error } = await supabase
         .from('tasks')
         .insert(task)
-        .select()
-        .single();
+        .select();
       
       if (error) {
         throw error;
       }
-      return data ;
+      return data;
     } catch (error) {
     console.error('Error creating task:', error);
     throw error;

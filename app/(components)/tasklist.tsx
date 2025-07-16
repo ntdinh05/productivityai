@@ -7,6 +7,7 @@ import TaskModal from './taskmodal';
 function TaskList() {
   const { tasks, modalVisible, closeTaskModal, openTaskInMyTasks, openTaskModal } = useTask();
   // const navigation = useNavigation();
+  
 
   return (
     <View style={{ alignItems: 'center', width: '100%' }}>
