@@ -1,13 +1,9 @@
 import express from "express";
-import env from "dotenv";
+import { supabase } from "./config/supabase.js";
 
-env.config();
-
-import { createClient } from "@supabase/supabase-js"; 
 
 const app = express();
 
-const supabase = createClient(process.env.DATABASE_URL,process.env.DATABASE_KEY);
 app.use(express.json()); // Middleware to parse JSON bodies
 
 app.get("/", (_, response) =>
@@ -48,7 +44,6 @@ app.post("/tasks", async (request, response) => {
       .insert([{ title, description, due_date, time, is_completed: false }])
       .select()
       .single();
-    
     if (error) throw error;
     response.status(201).json(data);
   } catch (error) {
@@ -152,7 +147,7 @@ app.put("/subtasks/:id", async (request, response) => {
       .single();
     if (error) throw error;
     response.json(data);
-    } catch (error) {
+  } catch (error) {
     console.error("Error updating subtask:", error);
     response.status(500).json({ error: "Failed to update subtask" });
   }
@@ -175,7 +170,6 @@ app.delete("/subtasks/:id", async (request, response) => {
     response.status(500).json({ error: "Failed to delete subtask" });
   }
 });
-
 
 const PORT = process.env.PORT || 3000;
 
