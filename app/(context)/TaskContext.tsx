@@ -1,5 +1,5 @@
-import  {TaskAPI}  from '@backend/api/taskApi';
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import TaskAPI from '../../backend/api/taskApi';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 
 export interface Task {
   id: string;
@@ -13,6 +13,7 @@ export interface Task {
   updated_at?: string;
   subtasks?: SubTask[];
 }
+
 export interface SubTask {
   id: string;
   title: string;
@@ -59,30 +60,30 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    refreshTasks();
-    refreshSubTasks();
-  }, []);
-
-  const refreshTasks = async () => {
+  const refreshTasks = useCallback(async () => {
     try {
       setError(null);
       setLoading(true);
-      const fetchedTasks = await taskService.getTasks();
+      console.log('Fetching tasks via TaskAPI');
+      const fetchedTasks = await TaskAPI.getAllTasks();
+      console.log('Tasks fetched successfully');
       setTasks(fetchedTasks);
     } catch (err) {
       console.error('Error fetching tasks:', err);
       setError(err instanceof Error ? err.message : 'Failed to fetch tasks');
+      setTasks([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const refreshSubTasks = async () => {
+  const refreshSubTasks = useCallback(async () => {
     try {
       setError(null);
       setLoading(true);
-      const fetchedSubTasks = await taskService.getSubTasks();
+      console.log('Fetching subtasks via TaskAPI');
+      const fetchedSubTasks = await TaskAPI.getAllSubTasks();
+      console.log('Subtasks fetched successfully');
       setSubTasks(fetchedSubTasks);
       groupSubtasksWithTasks(fetchedSubTasks);
     } catch (err) {
@@ -91,53 +92,51 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const groupSubtasksWithTasks = (fetchedSubtasks: SubTask[]) => {
-  setTasks(prevTasks =>
-    prevTasks.map(task => {
-      // Only add subtasks if Task type allows it
-      return {
+  const groupSubtasksWithTasks = useCallback((fetchedSubtasks: SubTask[]) => {
+    setTasks(prevTasks =>
+      prevTasks.map(task => ({
         ...task,
         subtasks: fetchedSubtasks.filter(subtask => subtask.parent === task.id)
-      };
-    })
-  );
-};
+      }))
+    );
+  }, []);
 
-  const addTask = async (task: Omit<Task, 'id'>) => {
-  try {
-    setLoading(true);
-    setError(null);
-    const newTaskArray = await taskService.createTask(task); // This returns Task[]
-    
-    // Handle the array response properly
-    if (newTaskArray && newTaskArray.length > 0) {
-      const newTask = newTaskArray[0]; // Get the first task from array
-      setTasks(prevTasks => [newTask, ...prevTasks]);
-    }
-  } catch (err) {
-    console.error('Error adding task:', err);
-    setError(err instanceof Error ? err.message : 'Failed to add task');
-    
-    // // Fallback to local state if database fails
-    // const localTask: Task = {
-    //   ...task,
-    //   id: Date.now().toString(),
-    //   is_completed: false,
-    //   subtasks: task.subtasks ?? [],
-    // };
-    // setTasks(prevTasks => [localTask, ...prevTasks]);
-  } finally {
-    setLoading(false);
-  }
-};
-
-  const updateTask = async (updatedTask: Task) => {
+  const addTask = useCallback(async (task: Omit<Task, 'id'>) => {
     try {
       setLoading(true);
       setError(null);
-      await taskService.updateTask(updatedTask);
+      console.log('Adding task via TaskAPI');
+      const newTask = await TaskAPI.createTask(task);
+      console.log('Task created successfully');
+      
+      setTasks(prevTasks => [newTask, ...prevTasks]);
+    } catch (err) {
+      console.error('Error adding task:', err);
+      setError(err instanceof Error ? err.message : 'Failed to add task');
+      
+      // Fallback to local state if API fails
+      const localTask: Task = {
+        ...task,
+        id: Date.now().toString(),
+        is_completed: false,
+        subtasks: [],
+      };
+      setTasks(prevTasks => [localTask, ...prevTasks]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const updateTask = useCallback(async (updatedTask: Task) => {
+    try {
+      setLoading(true);
+      setError(null);
+      console.log('Updating task via TaskAPI');
+      await TaskAPI.updateTask(updatedTask.id, updatedTask);
+      console.log('Task updated successfully');
+      
       setTasks(prevTasks =>
         prevTasks.map(task =>
           task.id === updatedTask.id ? updatedTask : task
@@ -146,7 +145,8 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (err) {
       console.error('Error updating task:', err);
       setError(err instanceof Error ? err.message : 'Failed to update task');
-      // Fallback to local state if database fails
+      
+      // Fallback to local state
       setTasks(prevTasks =>
         prevTasks.map(task =>
           task.id === updatedTask.id ? updatedTask : task
@@ -155,49 +155,58 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const deleteTask = async (taskId: string) => {
+  const deleteTask = useCallback(async (taskId: string) => {
     try {
       setLoading(true);
       setError(null);
-      await taskService.deleteTask(taskId);
+      console.log('Deleting task via TaskAPI');
+      await TaskAPI.deleteTask(taskId);
+      console.log('Task deleted successfully');
+      
       setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
     } catch (err) {
       console.error('Error deleting task:', err);
       setError(err instanceof Error ? err.message : 'Failed to delete task');
-      // Fallback to local state if database fails
+      
+      // Fallback to local state
       setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const openTaskModal = (task: Task) => {
+  const openTaskModal = useCallback((task: Task) => {
     setSelectedTask(task);
     setModalVisible(true);
-  };
+  }, []);
 
-  const closeTaskModal = () => {
+  const closeTaskModal = useCallback(() => {
     setModalVisible(false);
     setSelectedTask(null);
-  };
+  }, []);
 
-  const openEditModal = (task: Task) => {
+  const openEditModal = useCallback((task: Task) => {
     setSelectedTask(task);
     setEditModalVisible(true);
-  };
+  }, []);
 
-  const closeEditModal = () => {
+  const closeEditModal = useCallback(() => {
     setEditModalVisible(false);
     setSelectedTask(null);
-  };
+  }, []);
 
-  const openTaskInMyTasks = (task: Task, navigation: any) => {
+  const openTaskInMyTasks = useCallback((task: Task, navigation: any) => {
     setSelectedTask(task);
     setModalVisible(true);
     navigation.navigate('mytasks');
-  };
+  }, []);
+
+  useEffect(() => {
+    refreshTasks();
+    refreshSubTasks();
+  }, [refreshTasks, refreshSubTasks]);
 
   return (
     <TaskContext.Provider value={{
