@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = 'http://100.110.139.180:3000';
 
 class TaskAPI {
     constructor() {
@@ -16,7 +16,12 @@ class TaskAPI {
                 ...options,
             };
             console.log(`Making request to ${url}`);
+            console.log('Request config:', config);
+            
             const response = await fetch(url, config);
+            console.log('Response status:', response.status);
+            console.log('Response headers:', response.headers);
+            
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -25,6 +30,7 @@ class TaskAPI {
             return data;
         } catch (error) {
             console.error(`Error fetching ${endpoint}:`, error);
+            console.error('Error details:', error.message, error.stack);
             throw error;
         }
     }
@@ -56,16 +62,38 @@ class TaskAPI {
 
     // Update task
     async updateTask(taskId, taskData) {
+        // Only send the fields that the backend expects
+        const cleanTaskData = {
+            title: taskData.title,
+            description: taskData.description,
+            due_date: taskData.due_date,
+            time: taskData.time,
+            is_completed: taskData.is_completed
+        };
+        
+        console.log('Sending task update data:', cleanTaskData);
+        
         return this.makeRequest(`/tasks/${taskId}`, {
             method: 'PUT',
-            body: JSON.stringify(taskData),
+            body: JSON.stringify(cleanTaskData),
         });
     }
 
     async updateSubTask(subTaskId, subTaskData) {
+        // Only send the fields that the backend expects
+        const cleanSubTaskData = {
+            title: subTaskData.title,
+            description: subTaskData.description,
+            due_date: subTaskData.due_date,
+            time: subTaskData.time,
+            is_completed: subTaskData.is_completed
+        };
+        
+        console.log('Sending subtask update data:', cleanSubTaskData);
+        
         return this.makeRequest(`/subtasks/${subTaskId}`, {
             method: 'PUT',
-            body: JSON.stringify(subTaskData),
+            body: JSON.stringify(cleanSubTaskData),
         });
     }
 

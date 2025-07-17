@@ -36,8 +36,11 @@ interface TaskContextType {
   error: string | null;
   setTasks: (tasks: Task[]) => void;
   addTask: (task: Omit<Task, 'id'>) => Promise<void>;
+  addSubTask: (subtask: Omit<SubTask, 'id'>) => Promise<void>;
   updateTask: (updatedTask: Task) => Promise<void>;
+  updateSubTask: (updatedSubTask: SubTask) => Promise<void>;
   deleteTask: (taskId: string) => Promise<void>;
+  deleteSubTask: (subTaskId: string) => Promise<void>;
   refreshTasks: () => Promise<void>;
   refreshSubTasks: () => Promise<void>;
   setSubTasks: (subtasks: SubTask[]) => void;
@@ -136,13 +139,66 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
+  const addSubTask = useCallback(async (subtask: Omit<SubTask, 'id'>) => {
+    try {
+      setLoading(true);
+      setError(null);
+      console.log('Adding subtask via TaskAPI');
+      const newSubTask = await TaskAPI.createSubTask(subtask);
+      console.log('Subtask created successfully');
+      
+      // Add to subtasks array
+      setSubTasks(prevSubTasks => [newSubTask, ...prevSubTasks]);
+      
+      // Update the parent task with the new subtask
+      setTasks(prevTasks =>
+        prevTasks.map(task =>
+          task.id === subtask.parent
+            ? { ...task, subtasks: [...(task.subtasks || []), newSubTask] }
+            : task
+        )
+      );
+    } catch (err) {
+      console.error('Error adding subtask:', err);
+      setError(err instanceof Error ? err.message : 'Failed to add subtask');
+      
+      // Fallback to local state if API fails
+      const localSubTask: SubTask = {
+        ...subtask,
+        id: Date.now().toString(),
+        is_completed: false,
+      };
+      setSubTasks(prevSubTasks => [localSubTask, ...prevSubTasks]);
+      
+      // Update the parent task with the new subtask
+      setTasks(prevTasks =>
+        prevTasks.map(task =>
+          task.id === subtask.parent
+            ? { ...task, subtasks: [...(task.subtasks || []), localSubTask] }
+            : task
+        )
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const updateTask = useCallback(async (updatedTask: Task) => {
     try {
       setLoading(true);
       setError(null);
-      console.log('Updating task via TaskAPI');
+      console.log('Updating task via TaskAPI:', updatedTask);
       await TaskAPI.updateTask(updatedTask.id, updatedTask);
-      await TaskAPI.updateSubTask(updatedTask.subtasks || []);
+      
+      // Update subtasks individually if they exist
+      if (updatedTask.subtasks && updatedTask.subtasks.length > 0) {
+        console.log('Updating subtasks:', updatedTask.subtasks);
+        for (const subtask of updatedTask.subtasks) {
+          console.log('Updating subtask:', subtask);
+          await TaskAPI.updateSubTask(subtask.id, subtask);
+        }
+      }
+      
       console.log('Task updated successfully');
       
       setTasks(prevTasks =>
@@ -165,6 +221,62 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
+  const updateSubTask = useCallback(async (updatedSubTask: SubTask) => {
+    try {
+      setLoading(true);
+      setError(null);
+      console.log('Updating subtask via TaskAPI:', updatedSubTask);
+      await TaskAPI.updateSubTask(updatedSubTask.id, updatedSubTask);
+      console.log('Subtask updated successfully');
+      
+      // Update subtasks array
+      setSubTasks(prevSubTasks =>
+        prevSubTasks.map(subtask =>
+          subtask.id === updatedSubTask.id ? updatedSubTask : subtask
+        )
+      );
+      
+      // Update the parent task's subtasks
+      setTasks(prevTasks =>
+        prevTasks.map(task =>
+          task.id === updatedSubTask.parent
+            ? {
+                ...task,
+                subtasks: task.subtasks?.map(subtask =>
+                  subtask.id === updatedSubTask.id ? updatedSubTask : subtask
+                )
+              }
+            : task
+        )
+      );
+    } catch (err) {
+      console.error('Error updating subtask:', err);
+      setError(err instanceof Error ? err.message : 'Failed to update subtask');
+      
+      // Fallback to local state
+      setSubTasks(prevSubTasks =>
+        prevSubTasks.map(subtask =>
+          subtask.id === updatedSubTask.id ? updatedSubTask : subtask
+        )
+      );
+      
+      setTasks(prevTasks =>
+        prevTasks.map(task =>
+          task.id === updatedSubTask.parent
+            ? {
+                ...task,
+                subtasks: task.subtasks?.map(subtask =>
+                  subtask.id === updatedSubTask.id ? updatedSubTask : subtask
+                )
+              }
+            : task
+        )
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const deleteTask = useCallback(async (taskId: string) => {
     try {
       setLoading(true);
@@ -180,6 +292,42 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Fallback to local state
       setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const deleteSubTask = useCallback(async (subTaskId: string) => {
+    try {
+      setLoading(true);
+      setError(null);
+      console.log('Deleting subtask via TaskAPI');
+      await TaskAPI.deleteSubTask(subTaskId);
+      console.log('Subtask deleted successfully');
+      
+      // Remove from subtasks array
+      setSubTasks(prevSubTasks => prevSubTasks.filter(subtask => subtask.id !== subTaskId));
+      
+      // Remove from parent task's subtasks
+      setTasks(prevTasks =>
+        prevTasks.map(task => ({
+          ...task,
+          subtasks: task.subtasks?.filter(subtask => subtask.id !== subTaskId)
+        }))
+      );
+    } catch (err) {
+      console.error('Error deleting subtask:', err);
+      setError(err instanceof Error ? err.message : 'Failed to delete subtask');
+      
+      // Fallback to local state
+      setSubTasks(prevSubTasks => prevSubTasks.filter(subtask => subtask.id !== subTaskId));
+      
+      setTasks(prevTasks =>
+        prevTasks.map(task => ({
+          ...task,
+          subtasks: task.subtasks?.filter(subtask => subtask.id !== subTaskId)
+        }))
+      );
     } finally {
       setLoading(false);
     }
@@ -230,8 +378,11 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       error,
       setTasks,
       addTask,
+      addSubTask,
       updateTask,
+      updateSubTask,
       deleteTask,
+      deleteSubTask,
       refreshTasks,
       refreshSubTasks,
       setSubTasks,

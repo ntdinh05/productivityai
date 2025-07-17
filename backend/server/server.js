@@ -4,6 +4,19 @@ import { supabase } from "./config/supabase.js";
 
 const app = express();
 
+// Add CORS middleware
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
+
 app.use(express.json()); // Middleware to parse JSON bodies
 
 app.get("/", (_, response) =>
@@ -30,7 +43,9 @@ app.get("/tasks", async (_, response) => {
 // POST new task
 app.post("/tasks", async (request, response) => {
   try {
-    const { title, description, due_date, time, is_completed } = request.body;
+    const { title, description, due_date, time, is_completed, user_id } = request.body;
+    
+    console.log("Creating task with data:", { title, description, due_date, time, is_completed, user_id });
     
     // Basic validation
     if (!title || !due_date || !time) {
@@ -39,9 +54,21 @@ app.post("/tasks", async (request, response) => {
       });
     }
 
+    // Use provided user_id or null (some tasks can be created without user_id)
+    const taskData = {
+      title,
+      description,
+      due_date,
+      time,
+      is_completed: is_completed || false,
+      user_id: user_id || null
+    };
+
+    console.log("Inserting task with data:", taskData);
+
     const { data, error } = await supabase
       .from("tasks")
-      .insert([{ title, description, due_date, time, is_completed: false }])
+      .insert([taskData])
       .select("*")
       .single();
     if (error) throw error;
@@ -58,6 +85,8 @@ app.put("/tasks/:id", async (request, response) => {
     const { id } = request.params;
     const { title, description, due_date, time, is_completed } = request.body;
 
+    console.log(`Updating task ${id} with data:`, { title, description, due_date, time, is_completed });
+
     const { data, error } = await supabase
       .from("tasks")
       .update({ title, description, due_date, time, is_completed })
@@ -65,11 +94,16 @@ app.put("/tasks/:id", async (request, response) => {
       .select("*")
       .single();
 
-    if (error) throw error;
+    if (error) {
+      console.error("Supabase error updating task:", error);
+      throw error;
+    }
+    
+    console.log("Task updated successfully:", data);
     response.json(data);
   } catch (error) {
     console.error("Error updating task:", error);
-    response.status(500).json({ error: "Failed to update task" });
+    response.status(500).json({ error: "Failed to update task", details: error.message });
   }
 });
 
@@ -112,25 +146,47 @@ app.get("/subtasks", async (_, response) => {
 // POST new subtask
 app.post("/subtasks", async (request, response) => {
   try {
-    const { title, description, due_date, time, is_completed, parent } = request.body;
+    const { title, description, due_date, time, is_completed, parent, user_id } = request.body;
+    
+    console.log("Creating subtask with data:", { title, description, due_date, time, is_completed, parent, user_id });
     
     if (!title || !parent) {
+      console.log("Validation failed: missing title or parent");
       return response.status(400).json({ 
         error: "Title and parent are required" 
       });
     }
 
+    // Use provided user_id or a default UUID if not provided
+    const defaultUserId = "77cd5029-91ff-4d91-854b-7ae0b8339b3e"; // Default user for testing
+    const subtaskData = {
+      title,
+      description,
+      due_date,
+      time,
+      is_completed: is_completed || false,
+      parent,
+      user_id: user_id || defaultUserId
+    };
+
+    console.log("Inserting subtask with data:", subtaskData);
+
     const { data, error } = await supabase
       .from("subtasks")
-      .insert([{ title, description, due_date, time, is_completed, parent }])
+      .insert([subtaskData])
       .select("*")
       .single();
     
-    if (error) throw error;
+    if (error) {
+      console.error("Supabase error creating subtask:", error);
+      throw error;
+    }
+    
+    console.log("Subtask created successfully:", data);
     response.status(201).json(data);
   } catch (error) {
     console.error("Error creating subtask:", error);
-    response.status(500).json({ error: "Failed to create subtask" });
+    response.status(500).json({ error: "Failed to create subtask", details: error.message });
   }
 });
 
@@ -139,17 +195,26 @@ app.put("/subtasks/:id", async (request, response) => {
   try {
     const { id } = request.params;
     const { title, description, due_date, time, is_completed } = request.body;
+    
+    console.log(`Updating subtask ${id} with data:`, { title, description, due_date, time, is_completed });
+    
     const { data, error } = await supabase
       .from("subtasks")
       .update({ title, description, due_date, time, is_completed })
       .eq("id", id)
       .select("*")
       .single();
-    if (error) throw error;
+      
+    if (error) {
+      console.error("Supabase error updating subtask:", error);
+      throw error;
+    }
+    
+    console.log("Subtask updated successfully:", data);
     response.json(data);
   } catch (error) {
     console.error("Error updating subtask:", error);
-    response.status(500).json({ error: "Failed to update subtask" });
+    response.status(500).json({ error: "Failed to update subtask", details: error.message });
   }
 });
 
@@ -173,7 +238,7 @@ app.delete("/subtasks/:id", async (request, response) => {
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () =>
+app.listen(PORT, '0.0.0.0', () =>
   console.log(
     new Date().toLocaleTimeString() + `: Server is running on port ${PORT}...`
   )
