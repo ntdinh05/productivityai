@@ -1,7 +1,5 @@
-import { taskService } from '@/utils/taskservice';
 import { Ionicons } from "@expo/vector-icons";
-
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Image, Switch, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 
