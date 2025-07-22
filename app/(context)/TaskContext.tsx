@@ -376,10 +376,14 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  const openTaskModal = useCallback((task: Task) => {
+  const openTaskModal = useCallback(async (task: Task) => {
+    console.log('🔍 [TaskContext] Opening task modal for task:', task.id);
     setSelectedTask(task);
     setModalVisible(true);
-  }, []);
+    
+    // Refresh subtasks to ensure we have the latest data
+    await refreshSubTasks();
+  }, [refreshSubTasks]);
 
   const closeTaskModal = useCallback(() => {
     setModalVisible(false);

@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://100.110.139.180:3000';
+const API_BASE_URL = 'http://10.84.89.1:3000';
 
 class TaskAPI {
     constructor() {

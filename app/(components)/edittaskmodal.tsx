@@ -5,7 +5,7 @@ import { heightPercentageToDP as hp } from 'react-native-responsive-screen';
 import { SubTask, useTask } from '../(context)/TaskContext';
 
 const EditTaskModal = () => {
-  const { selectedTask, editModalVisible, closeEditModal, updateTask, deleteTask } = useTask();
+  const { selectedTask, editModalVisible, closeEditModal, updateTask, deleteTask, addSubTask, deleteSubTask, refreshTasks, refreshSubTasks } = useTask();
   
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -18,7 +18,7 @@ const EditTaskModal = () => {
   const [newSubtaskDate, setNewSubtaskDate] = useState('');
   const [newSubtaskTime, setNewSubtaskTime] = useState('');
   const [newSubtaskProgress, setNewSubtaskProgress] = useState<'Not Started' | 'In Progress' | 'Completed'>('Not Started');
-  const [expandedSubtasks, setExpandedSubtasks] = useState<Set<number>>(new Set());
+  const [expandedSubtasks, setExpandedSubtasks] = useState<Set<string>>(new Set());
 
   const progressOptions = ['Not Started', 'In Progress', 'Completed'];
 
@@ -27,15 +27,26 @@ const EditTaskModal = () => {
     if (selectedTask) {
       setTitle(selectedTask.title);
       setDescription(selectedTask.description || '');
-      setDate(selectedTask.date);
+      setDate(selectedTask.due_date);
       setTime(selectedTask.time);
-      setProgress(selectedTask.progress);
+      setProgress(selectedTask.is_completed ? 'Completed' : 'In Progress');
       setSubtasks(selectedTask.subtasks || []);
-      setNewSubtaskDate(selectedTask.date); // Default to parent task date
+      setNewSubtaskDate(selectedTask.due_date); // Default to parent task date
       setNewSubtaskTime(selectedTask.time); // Default to parent task time
       setNewSubtaskProgress('Not Started'); // Default progress
+      
+      // Refresh subtasks when modal opens to ensure we have the latest data
+      refreshSubTasks();
     }
-  }, [selectedTask]);
+  }, [selectedTask, refreshSubTasks]);
+
+  // Update subtasks when selectedTask.subtasks changes
+  useEffect(() => {
+    if (selectedTask?.subtasks) {
+      console.log('🔄 [EditTaskModal] Updating subtasks from selectedTask:', selectedTask.subtasks.length);
+      setSubtasks(selectedTask.subtasks);
+    }
+  }, [selectedTask?.subtasks]);
 
   const handleSave = () => {
     if (!title.trim()) {
@@ -47,9 +58,9 @@ const EditTaskModal = () => {
       ...selectedTask!,
       title: title.trim(),
       description: description.trim(),
-      date,
-      time,
-      progress,
+      due_date: date,
+      time: time,
+      is_completed: progress === 'Completed',
       subtasks,
     };
 
@@ -75,30 +86,49 @@ const EditTaskModal = () => {
     );
   };
 
-  const handleAddSubtask = () => {
+  const handleAddSubtask = async () => {
     if (!newSubtaskTitle.trim()) {
       Alert.alert('Error', 'Please enter a subtask title');
       return;
     }
 
-    const newSubtask: SubTask = {
-      id: Date.now(),
-      title: newSubtaskTitle.trim(),
-      description: newSubtaskDescription.trim(),
-      date: newSubtaskDate || date,
-      time: newSubtaskTime || time,
-      progress: newSubtaskProgress,
-    };
+    try {
+      console.log('🚀 [EditTaskModal] Adding subtask to task:', selectedTask?.id);
+      
+      const newSubtaskData = {
+        title: newSubtaskTitle.trim(),
+        description: newSubtaskDescription.trim(),
+        due_date: newSubtaskDate || date,
+        time: newSubtaskTime || time,
+        is_completed: newSubtaskProgress === 'Completed',
+        parent: selectedTask!.id,
+      };
 
-    setSubtasks([...subtasks, newSubtask]);
-    setNewSubtaskTitle('');
-    setNewSubtaskDescription('');
-    setNewSubtaskDate(date);
-    setNewSubtaskTime(time);
-    setNewSubtaskProgress('Not Started');
+      console.log('📝 [EditTaskModal] Subtask data:', newSubtaskData);
+      
+      // Call the API through TaskContext
+      await addSubTask(newSubtaskData);
+      
+      console.log('✅ [EditTaskModal] Subtask added successfully');
+      
+      // Refresh tasks and subtasks to get the latest data
+      await refreshSubTasks();
+      await refreshTasks();
+      
+      // Clear form
+      setNewSubtaskTitle('');
+      setNewSubtaskDescription('');
+      setNewSubtaskDate(date);
+      setNewSubtaskTime(time);
+      setNewSubtaskProgress('Not Started');
+      
+    } catch (error) {
+      console.error('❌ [EditTaskModal] Error adding subtask:', error);
+      Alert.alert('Error', 'Failed to add subtask. Please try again.');
+    }
   };
 
-  const handleDeleteSubtask = (subtaskId: number) => {
+  const handleDeleteSubtask = async (subtaskId: string) => {
     Alert.alert(
       'Delete Subtask',
       'Are you sure you want to delete this subtask?',
@@ -107,26 +137,44 @@ const EditTaskModal = () => {
         { 
           text: 'Delete', 
           style: 'destructive',
-          onPress: () => {
-            setSubtasks(subtasks.filter(subtask => subtask.id !== subtaskId));
-            setExpandedSubtasks(prev => {
-              const newSet = new Set(prev);
-              newSet.delete(subtaskId);
-              return newSet;
-            });
+          onPress: async () => {
+            try {
+              console.log('🗑️ [EditTaskModal] Deleting subtask:', subtaskId);
+              
+              // Call the API through TaskContext
+              await deleteSubTask(subtaskId);
+              
+              console.log('✅ [EditTaskModal] Subtask deleted successfully');
+              
+              // Refresh tasks and subtasks to get the latest data
+              await refreshSubTasks();
+              await refreshTasks();
+              
+              // Remove from local state for immediate UI update
+              setSubtasks(subtasks.filter(subtask => subtask.id !== subtaskId));
+              setExpandedSubtasks(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(subtaskId);
+                return newSet;
+              });
+              
+            } catch (error) {
+              console.error('❌ [EditTaskModal] Error deleting subtask:', error);
+              Alert.alert('Error', 'Failed to delete subtask. Please try again.');
+            }
           }
         }
       ]
     );
   };
 
-  const handleUpdateSubtask = (subtaskId: number, field: keyof SubTask, value: string) => {
+  const handleUpdateSubtask = (subtaskId: string, field: keyof SubTask, value: string) => {
     setSubtasks(subtasks.map(subtask =>
       subtask.id === subtaskId ? { ...subtask, [field]: value } : subtask
     ));
   };
 
-  const toggleSubtaskExpanded = (subtaskId: number) => {
+  const toggleSubtaskExpanded = (subtaskId: string) => {
     setExpandedSubtasks(prev => {
       const newSet = new Set(prev);
       if (newSet.has(subtaskId)) {
@@ -364,8 +412,8 @@ const EditTaskModal = () => {
                               <Text style={styles.subtaskLabel}>Date</Text>
                               <TextInput
                                 style={styles.subtaskInput}
-                                value={subtask.date}
-                                onChangeText={(text) => handleUpdateSubtask(subtask.id, 'date', text)}
+                                value={subtask.due_date}
+                                onChangeText={(text) => handleUpdateSubtask(subtask.id, 'due_date', text)}
                                 placeholder="YYYY-MM-DD"
                               />
                             </View>
@@ -389,14 +437,14 @@ const EditTaskModal = () => {
                                   key={option}
                                   style={[
                                     styles.subtaskProgressButton,
-                                    subtask.progress === option && styles.subtaskProgressButtonActive,
+                                    subtask.is_completed === (option === 'Completed') && styles.subtaskProgressButtonActive,
                                   ]}
-                                  onPress={() => handleUpdateSubtask(subtask.id, 'progress', option)}
+                                  onPress={() => handleUpdateSubtask(subtask.id, 'is_completed', (option === 'Completed').toString())}
                                 >
                                   <Text
                                     style={[
                                       styles.subtaskProgressText,
-                                      subtask.progress === option && styles.subtaskProgressTextActive,
+                                      subtask.is_completed === (option === 'Completed') && styles.subtaskProgressTextActive,
                                     ]}
                                   >
                                     {option}
