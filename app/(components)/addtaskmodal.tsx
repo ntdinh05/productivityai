@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { Modal, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SubTask, useTask } from '../(context)/TaskContext';
-import AddSubTasks from './addsubtaskcomponent';
 import DisplaySubTaskComponent from './displaysubstackcomponent';
 interface AddTaskModalProps {
   visible: boolean;
@@ -10,42 +9,76 @@ interface AddTaskModalProps {
 }
 
 const AddTaskModal: React.FC<AddTaskModalProps> = ({ visible, onClose }) => {
-  const { addTask } = useTask();
+  const { addTask, addSubTask, loading } = useTask();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
-  const [subTaskModalVisible, setSubTaskModalVisible] = useState(false);
-  const [subTasks, setSubTasks] = useState<SubTask[]>([]); // State for sub-tasks
+  const [subTasks, setSubTasks] = useState<SubTask[]>([]);
+  const [showSubTaskForm, setShowSubTaskForm] = useState(false);
+  const [subTaskTitle, setSubTaskTitle] = useState('');
+  const [subTaskDescription, setSubTaskDescription] = useState('');
+  const [subTaskDate, setSubTaskDate] = useState('');
+  const [subTaskTime, setSubTaskTime] = useState('');
   const [progress, setProgress] = useState<'Not Started' | 'In Progress' | 'Completed'>('Not Started');
  
   const progressOptions = ['Not Started', 'In Progress', 'Completed'];
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!title.trim()) {
       alert('Please enter a task title');
       return;
     }
 
-    const newTask = {
-      title: title.trim(),
-      description: description.trim(),
-      due_date: date || new Date().toISOString().split('T')[0], // Default to today
-      time: time || '09:00',
-      // subtasks: subTasks, // Include sub-tasks
-      is_completed: false,
-    };
-    addTask(newTask)
+    if (!date || !time) {
+      alert('Please enter both date and time');
+      return;
+    }
 
-    // Reset form
-    setTitle('');
-    setDescription('');
-    setDate('');
-    setTime('');
-    setProgress('Not Started');
-    setSubTasks([]); // Clear sub-tasks
-    
-    onClose();
+    try {
+      console.log('🎯 [AddTaskModal] Starting save process...');
+      console.log('📋 [AddTaskModal] Task data:', { title, description, date, time });
+      console.log('📝 [AddTaskModal] Subtasks to create:', subTasks);
+      
+      // Create the main task first
+      const newTask = {
+        title: title.trim(),
+        description: description.trim(),
+        due_date: date,
+        time: time,
+        is_completed: false,
+      };
+      
+      console.log('🚀 [AddTaskModal] Creating main task...');
+      const createdTask = await addTask(newTask);
+      console.log('✅ [AddTaskModal] Main task created:', createdTask);
+      
+      // If task creation was successful and we have subtasks, create them
+      if (createdTask && createdTask.id && subTasks.length > 0) {
+        console.log('🔄 [AddTaskModal] Creating subtasks for parent ID:', createdTask.id);
+        for (const subTask of subTasks) {
+          console.log('🚀 [AddTaskModal] Creating subtask:', subTask);
+          await addSubTask({
+            title: subTask.title,
+            description: subTask.description || '',
+            due_date: subTask.due_date,
+            time: subTask.time,
+            is_completed: false,
+            parent: createdTask.id
+          });
+          console.log('✅ [AddTaskModal] Subtask created successfully');
+        }
+        console.log('🎉 [AddTaskModal] All subtasks created successfully!');
+      } else {
+        console.log('ℹ️ [AddTaskModal] No subtasks to create or task creation failed');
+      }
+      
+      // Reset form and close modal
+      handleCancel();
+    } catch (error) {
+      console.error('❌ [AddTaskModal] Error creating task:', error);
+      alert('Failed to create task. Please try again.');
+    }
   };
 
   const handleCancel = () => {
@@ -55,7 +88,14 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ visible, onClose }) => {
     setDate('');
     setTime('');
     setProgress('Not Started');
-    setSubTasks([]); // Clear sub-tasks
+    setSubTasks([]);
+    
+    // Reset subtask form
+    setShowSubTaskForm(false);
+    setSubTaskTitle('');
+    setSubTaskDescription('');
+    setSubTaskDate('');
+    setSubTaskTime('');
     
     onClose();
   };
@@ -66,6 +106,40 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ visible, onClose }) => {
 
   const addSubTasks = (subTask: SubTask) => {
     setSubTasks(prev => [...prev, subTask]);
+  };
+
+  const handleAddSubTaskForm = () => {
+    if (!subTaskTitle.trim()) {
+      alert('Please enter a subtask title');
+      return;
+    }
+
+    const newSubTask: SubTask = {
+      id: Date.now().toString(), // Temporary ID for local display
+      title: subTaskTitle.trim(),
+      description: subTaskDescription.trim(),
+      due_date: subTaskDate || date || new Date().toISOString().split('T')[0],
+      time: subTaskTime || time || '09:00',
+      is_completed: false,
+      parent: '' // Will be set when task is created
+    };
+    
+    addSubTasks(newSubTask);
+    
+    // Clear form and hide it
+    setSubTaskTitle('');
+    setSubTaskDescription('');
+    setSubTaskDate('');
+    setSubTaskTime('');
+    setShowSubTaskForm(false);
+  };
+
+  const handleCancelSubTask = () => {
+    setSubTaskTitle('');
+    setSubTaskDescription('');
+    setSubTaskDate('');
+    setSubTaskTime('');
+    setShowSubTaskForm(false);
   };
 
   return (
@@ -168,14 +242,84 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ visible, onClose }) => {
               <Text style={styles.modalTitle}>Add sub-tasks</Text>
             </View>
 
-            {/* Section to create subtasks */}
-         
-            <View style={styles.subTaskRow}>
-              <AddSubTasks
-                subTasks={subTasks}
-                addSubTasks={addSubTasks}
-              />
-            </View>
+            {/* Add Subtask Button */}
+            {!showSubTaskForm && (
+              <View style={styles.inputGroup}>
+                <TouchableOpacity 
+                  style={styles.addSubtaskButton}
+                  onPress={() => setShowSubTaskForm(true)}
+                >
+                  <Ionicons name="add-circle" size={24} color="#E9762B" />
+                  <Text style={styles.addSubtaskText}>Add Subtask</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* Subtask Form */}
+            {showSubTaskForm && (
+              <View style={styles.subTaskFormContainer}>
+                <Text style={styles.subTaskFormTitle}>New Subtask</Text>
+                
+                {/* Subtask Title */}
+                <View style={styles.inputGroup}>
+                  <Text style={styles.label}>Subtask Title *</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Enter subtask title"
+                    value={subTaskTitle}
+                    onChangeText={setSubTaskTitle}
+                    multiline
+                    numberOfLines={2}
+                  />
+                </View>
+
+                {/* Subtask Description */}
+                <View style={styles.inputGroup}>
+                  <Text style={styles.label}>Description</Text>
+                  <TextInput
+                    style={[styles.input, styles.descriptionInput]}
+                    placeholder="Enter subtask description"
+                    value={subTaskDescription}
+                    onChangeText={setSubTaskDescription}
+                    multiline
+                    numberOfLines={2}
+                  />
+                </View>
+
+                {/* Subtask Date and Time */}
+                <View style={styles.row}>
+                  <View style={[styles.inputGroup, styles.halfWidth]}>
+                    <Text style={styles.label}>Date</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder={date || "YYYY-MM-DD"}
+                      value={subTaskDate}
+                      onChangeText={setSubTaskDate}
+                    />
+                  </View>
+                  <View style={[styles.inputGroup, styles.halfWidth]}>
+                    <Text style={styles.label}>Time</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder={time || "HH:MM"}
+                      value={subTaskTime}
+                      onChangeText={setSubTaskTime}
+                    />
+                  </View>
+                </View>
+
+                {/* Subtask Form Buttons */}
+                <View style={styles.subTaskButtonContainer}>
+                  <TouchableOpacity style={styles.cancelButton} onPress={handleCancelSubTask}>
+                    <Text style={styles.cancelButtonText}>Cancel</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.saveButton} onPress={handleAddSubTaskForm}>
+                    <Text style={styles.saveButtonText}>Add Subtask</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+            
             {subTasks.length > 0 ? (
               <View>
                 {subTasks.map((subTask) => (
@@ -194,16 +338,23 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ visible, onClose }) => {
               </View>
             ) : (
               <View>
-                <Text>No Subtasks Available</Text>
+                <Text style={styles.noSubtasksText}>No Subtasks Available</Text>
               </View>
             )}
-              {/* Action Buttons */}
+
+            {/* Action Buttons */}
             <View style={styles.buttonContainer}>
               <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
                 <Text style={styles.cancelButtonText}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                <Text style={styles.saveButtonText}>Save Task</Text>
+              <TouchableOpacity 
+                style={[styles.saveButton, loading && { opacity: 0.7 }]} 
+                onPress={handleSave}
+                disabled={loading}
+              >
+                <Text style={styles.saveButtonText}>
+                  {loading ? 'Creating...' : 'Save Task'}
+                </Text>
               </TouchableOpacity>
             </View>
           </ScrollView>
@@ -215,8 +366,45 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ visible, onClose }) => {
 
 const styles = StyleSheet.create({
   addSubtaskButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#E9762B',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+  },
+  addSubtaskText: {
     marginLeft: 8,
-    padding: 2,
+    fontSize: 16,
+    color: '#E9762B',
+    fontWeight: '600',
+  },
+  noSubtasksText: {
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    marginVertical: 10,
+  },
+  subTaskFormContainer: {
+    backgroundColor: '#f8f8f8',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  subTaskFormTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 15,
+    textAlign: 'center',
+  },
+  subTaskButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 15,
   },
   subTaskRow: {
     flexDirection: 'row',

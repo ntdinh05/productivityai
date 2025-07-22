@@ -35,7 +35,7 @@ interface TaskContextType {
   loading: boolean;
   error: string | null;
   setTasks: (tasks: Task[]) => void;
-  addTask: (task: Omit<Task, 'id'>) => Promise<void>;
+  addTask: (task: Omit<Task, 'id'>) => Promise<Task>;
   addSubTask: (subtask: Omit<SubTask, 'id'>) => Promise<void>;
   updateTask: (updatedTask: Task) => Promise<void>;
   updateSubTask: (updatedSubTask: SubTask) => Promise<void>;
@@ -113,41 +113,46 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
   }, []);
 
-  const addTask = async (task: Omit<Task, 'id'>) => {
-  try {
-    setLoading(true);
-    setError(null);
-    const newTaskArray = await taskService.createTask(task); // This returns Task[]
-    
-    // Handle the array response properly
-    if (newTaskArray && newTaskArray.length > 0) {
-      const newTask = newTaskArray[0]; // Get the first task from array
+  const addTask = useCallback(async (task: Omit<Task, 'id'>) => {
+    try {
+      setLoading(true);
+      setError(null);
+      console.log('🚀 [TaskContext] Starting task creation:', task);
+      console.log('🌐 [TaskContext] Calling TaskAPI.createTask...');
+      
+      const newTask = await TaskAPI.createTask(task);
+      console.log('✅ [TaskContext] Task created successfully:', newTask);
+      
       setTasks(prevTasks => [newTask, ...prevTasks]);
+      return newTask; // Return the created task
+    } catch (err) {
+      console.error('❌ [TaskContext] Error adding task:', err);
+      setError(err instanceof Error ? err.message : 'Failed to add task');
+      
+      // Fallback to local state if API fails
+      const localTask: Task = {
+        ...task,
+        id: Date.now().toString(),
+        is_completed: false,
+        subtasks: [],
+      };
+      console.log('🔄 [TaskContext] Using fallback local task:', localTask);
+      setTasks(prevTasks => [localTask, ...prevTasks]);
+      return localTask; // Return the local task
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error('Error adding task:', err);
-    setError(err instanceof Error ? err.message : 'Failed to add task');
-    
-    // // Fallback to local state if database fails
-    // const localTask: Task = {
-    //   ...task,
-    //   id: Date.now().toString(),
-    //   is_completed: false,
-    //   subtasks: task.subtasks ?? [],
-    // };
-    // setTasks(prevTasks => [localTask, ...prevTasks]);
-  } finally {
-    setLoading(false);
-  }
-};
+  }, []);
 
   const addSubTask = useCallback(async (subtask: Omit<SubTask, 'id'>) => {
     try {
       setLoading(true);
       setError(null);
-      console.log('Adding subtask via TaskAPI');
+      console.log('🚀 [TaskContext] Starting subtask creation:', subtask);
+      console.log('🌐 [TaskContext] Calling TaskAPI.createSubTask...');
+      
       const newSubTask = await TaskAPI.createSubTask(subtask);
-      console.log('Subtask created successfully');
+      console.log('✅ [TaskContext] Subtask created successfully:', newSubTask);
       
       // Add to subtasks array
       setSubTasks(prevSubTasks => [newSubTask, ...prevSubTasks]);
@@ -161,7 +166,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
         )
       );
     } catch (err) {
-      console.error('Error adding subtask:', err);
+      console.error('❌ [TaskContext] Error adding subtask:', err);
       setError(err instanceof Error ? err.message : 'Failed to add subtask');
       
       // Fallback to local state if API fails
@@ -170,6 +175,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
         id: Date.now().toString(),
         is_completed: false,
       };
+      console.log('🔄 [TaskContext] Using fallback local subtask:', localSubTask);
       setSubTasks(prevSubTasks => [localSubTask, ...prevSubTasks]);
       
       // Update the parent task with the new subtask
@@ -185,19 +191,36 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
+  // Helper function to check if an ID is temporary/local (created by Date.now())
+  const isTemporaryId = (id: string): boolean => {
+    // Temporary IDs are created using Date.now().toString(), so they will be numeric
+    // Real database IDs are typically UUIDs or other non-numeric formats
+    return /^\d+$/.test(id);
+  };
+
   const updateTask = useCallback(async (updatedTask: Task) => {
     try {
       setLoading(true);
       setError(null);
       console.log('Updating task via TaskAPI:', updatedTask);
-      await TaskAPI.updateTask(updatedTask.id, updatedTask);
       
-      // Update subtasks individually if they exist
+      // Only update the task if it has a real ID (not temporary)
+      if (!isTemporaryId(updatedTask.id)) {
+        await TaskAPI.updateTask(updatedTask.id, updatedTask);
+      } else {
+        console.log('Skipping API update for task with temporary ID:', updatedTask.id);
+      }
+      
+      // Update subtasks individually if they exist, but only those with real IDs
       if (updatedTask.subtasks && updatedTask.subtasks.length > 0) {
         console.log('Updating subtasks:', updatedTask.subtasks);
         for (const subtask of updatedTask.subtasks) {
-          console.log('Updating subtask:', subtask);
-          await TaskAPI.updateSubTask(subtask.id, subtask);
+          if (!isTemporaryId(subtask.id)) {
+            console.log('Updating subtask:', subtask);
+            await TaskAPI.updateSubTask(subtask.id, subtask);
+          } else {
+            console.log('Skipping API update for subtask with temporary ID:', subtask.id);
+          }
         }
       }
       
@@ -228,8 +251,14 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(true);
       setError(null);
       console.log('Updating subtask via TaskAPI:', updatedSubTask);
-      await TaskAPI.updateSubTask(updatedSubTask.id, updatedSubTask);
-      console.log('Subtask updated successfully');
+      
+      // Only update the subtask if it has a real ID (not temporary)
+      if (!isTemporaryId(updatedSubTask.id)) {
+        await TaskAPI.updateSubTask(updatedSubTask.id, updatedSubTask);
+        console.log('Subtask updated successfully');
+      } else {
+        console.log('Skipping API update for subtask with temporary ID:', updatedSubTask.id);
+      }
       
       // Update subtasks array
       setSubTasks(prevSubTasks =>
@@ -284,8 +313,14 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(true);
       setError(null);
       console.log('Deleting task via TaskAPI');
-      await TaskAPI.deleteTask(taskId);
-      console.log('Task deleted successfully');
+      
+      // Only delete the task if it has a real ID (not temporary)
+      if (!isTemporaryId(taskId)) {
+        await TaskAPI.deleteTask(taskId);
+        console.log('Task deleted successfully');
+      } else {
+        console.log('Skipping API delete for task with temporary ID:', taskId);
+      }
       
       setTasks(prevTasks => prevTasks.filter(task => task.id !== taskId));
     } catch (err) {
@@ -304,8 +339,14 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(true);
       setError(null);
       console.log('Deleting subtask via TaskAPI');
-      await TaskAPI.deleteSubTask(subTaskId);
-      console.log('Subtask deleted successfully');
+      
+      // Only delete the subtask if it has a real ID (not temporary)
+      if (!isTemporaryId(subTaskId)) {
+        await TaskAPI.deleteSubTask(subTaskId);
+        console.log('Subtask deleted successfully');
+      } else {
+        console.log('Skipping API delete for subtask with temporary ID:', subTaskId);
+      }
       
       // Remove from subtasks array
       setSubTasks(prevSubTasks => prevSubTasks.filter(subtask => subtask.id !== subTaskId));

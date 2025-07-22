@@ -1,19 +1,70 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { SubTask } from '../(context)/TaskContext';
+import { SubTask, useTask } from '../(context)/TaskContext';
+
 interface SubTaskComponentProps {
-  subTasks: SubTask[];
-  addSubTasks: (subTask: SubTask) => void;
+  parentTaskId: string; // The ID of the parent task
+  onSubTaskAdded?: () => void; // Optional callback when subtask is added
 }
 
-function addsubtaskcomponent({ subTasks, addSubTasks }: SubTaskComponentProps) {
+function addsubtaskcomponent({ parentTaskId, onSubTaskAdded }: SubTaskComponentProps) {
+  const { addSubTask, loading, error } = useTask();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [progress, setProgress] = useState<'Not Started' | 'In Progress' | 'Completed'>('Not Started');
+  
   const progressOptions = ['Not Started', 'In Progress', 'Completed'];
+
+  const handleAddSubTask = async () => {
+    if (!title.trim()) {
+      alert('Please enter a subtask title');
+      return;
+    }
+
+    if (!date || !time) {
+      alert('Please enter both date and time');
+      return;
+    }
+
+    try {
+      const newSubTask: Omit<SubTask, 'id'> = {
+        title: title.trim(),
+        description: description.trim(),
+        due_date: date,
+        time: time,
+        is_completed: progress === 'Completed',
+        parent: parentTaskId,
+      };
+
+      await addSubTask(newSubTask);
+      
+      // Clear form after successful creation
+      setTitle('');
+      setDescription('');
+      setDate('');
+      setTime('');
+      setProgress('Not Started');
+      
+      // Call callback if provided
+      if (onSubTaskAdded) {
+        onSubTaskAdded();
+      }
+    } catch (err) {
+      console.error('Error adding subtask:', err);
+      alert('Failed to add subtask. Please try again.');
+    }
+  };
+
+  const clearForm = () => {
+    setTitle('');
+    setDescription('');
+    setDate('');
+    setTime('');
+    setProgress('Not Started');
+  };
   return (
     <View style={{ padding: 10, backgroundColor: '#f9f9f9', borderRadius: 8 }}>
       <View style={styles.formContainer}>
@@ -93,42 +144,22 @@ function addsubtaskcomponent({ subTasks, addSubTasks }: SubTaskComponentProps) {
       </View>
       <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 12 }}>
         <TouchableOpacity
-          style={styles.saveButton}
-          onPress={() => {
-            if (!title.trim()) {
-              alert('Please enter a subtask title');
-              return;
-            }
-            addSubTasks({
-              id: (Date.now() + Math.random()).toString(),
-              title: title.trim(),
-              description: description.trim(),
-              due_date: date,
-              time: time,
-              is_completed: progress === 'Completed', // boolean based on progress
-              parent: '', // Set this to the parent task id if you have it, otherwise leave as ''
-            });
-            setTitle('');
-            setDescription('');
-            setDate('');
-            setTime('');
-            setProgress('Not Started');
-          }}
+          style={[styles.saveButton, loading && { opacity: 0.7 }]}
+          onPress={handleAddSubTask}
+          disabled={loading}
         >
-          <Text style={styles.saveButtonText}>Add Subtask</Text>
+          <Text style={styles.saveButtonText}>
+            {loading ? 'Adding...' : 'Add Subtask'}
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={
-          () => {
-            setTitle('');
-            setDescription('');
-            setDate('');
-            setTime('');
-            setProgress('Not Started');
-          }
-        }>
+        <TouchableOpacity onPress={clearForm}>
           <Ionicons name="trash" size={24} color="#666" />
         </TouchableOpacity>
       </View>
+      
+      {error && (
+        <Text style={styles.errorText}>Error: {error}</Text>
+      )}
     </View>
   );
 }
@@ -259,6 +290,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#fff',
     fontWeight: '600',
+  },
+  errorText: {
+    color: '#ff4444',
+    fontSize: 14,
+    marginTop: 8,
+    textAlign: 'center',
   },
 });
 

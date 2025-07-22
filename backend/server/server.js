@@ -19,6 +19,13 @@ app.use((req, res, next) => {
 
 app.use(express.json()); // Middleware to parse JSON bodies
 
+// Add request logging middleware
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  console.log('Request body:', req.body);
+  next();
+});
+
 app.get("/", (_, response) =>
   response.json({ info: "Express app with Supabase" })
 );
